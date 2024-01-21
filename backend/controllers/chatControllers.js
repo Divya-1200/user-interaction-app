@@ -1,7 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Chat = require("../models/chatModel");
 const User = require("../models/userModel");
-
+const Tag  = require("../models/tagModel"); 
 //@description     Create or fetch One to One Chat
 //@route           POST /api/chat/
 //@access          Protected
@@ -79,37 +79,67 @@ const fetchChats = asyncHandler(async (req, res) => {
 //@route           POST /api/chat/group
 //@access          Protected
 const createGroupChat = asyncHandler(async (req, res) => {
+  console.log("createGroupChat");
   if (!req.body.users || !req.body.name) {
     return res.status(400).send({ message: "Please Fill all the feilds" });
   }
-  console.log(req.body.users);
-  console.log("Ready to go ");
   var users = JSON.parse(req.body.users);
-  console.log(users);
+  // var tags = JSON.parse(req.body.tags);
   if (users.length < 1) {
     return res
       .status(400)
       .send("More than 2 users are required to form a group chat");
   }
-  console.log("Ready to go 1");
-  users.push(req.user);
 
+  users.push(req.user);
   try {
+    const tag = await Tag.create({
+      tag: req.body.tags,
+    });
+
     const groupChat = await Chat.create({
       chatName: req.body.name,
       users: users,
       isGroupChat: true,
       groupAdmin: req.user,
+      groupDescription: req.body.description,
+      tag: tag._id,
+
     });
-    console.log("Ready to go 2");
     const fullGroupChat = await Chat.findOne({ _id: groupChat._id })
       .populate("users", "-password")
       .populate("groupAdmin", "-password");
-
     res.status(200).json(fullGroupChat);
   } catch (error) {
     res.status(400);
     throw new Error(error.message);
+  }
+});
+
+// @desc Update group chat
+// @route PUT/ /api/chat/description
+// @access protected
+const updateDescription = asyncHandler(async (req, res) => {
+  const { chatId, groupDescription } = req.body;
+
+  const updatedDescription = await Chat.findByIdAndUpdate(
+    chatId, 
+    {
+      groupDescription: groupDescription,
+
+    },
+    {
+      new : true,
+    }
+  )
+  .populate("users", "-password")
+  .populate("groupAdmin", "-password");
+
+  if (!updatedDescription) {
+    res.status(404);
+    throw new Error("Chat Not Found");
+  } else {
+    res.json(updatedDescription);
   }
 });
 
@@ -202,4 +232,5 @@ module.exports = {
   renameGroup,
   addToGroup,
   removeFromGroup,
+  updateDescription,
 };
