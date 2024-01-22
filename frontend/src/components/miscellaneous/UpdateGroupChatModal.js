@@ -35,6 +35,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [renameloading, setRenameLoading] = useState(false);
+  const [selectedTags, setSelectedTag] = useState([]);
   const toast = useToast();
 
   const { selectedChat, setSelectedChat, user } = ChatState();
@@ -77,7 +78,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
         status: "error",
         duration: 5000,
         isClosable: true,
-        position: "bottom-left",
+        position: "top",
       });
       setLoading(false);
     }
@@ -189,7 +190,6 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     return date.toISOString().substring(0, 10);
   };
   const handleRemove = async (user1) => {
-    console.log("selectedChat", selectedChat);
     if (selectedChat.groupAdmin._id !== user._id && user1._id !== user._id) {
       toast({
         title: "Only admins can remove someone!",
@@ -271,6 +271,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
             </Box>
             <Box w="100%" mb={3}>
               <Box d="flex" alignItems="center" mb={2}>
+              <Text fontWeight="bold">Group Description</Text>
                 {editing ? (
                   <IconButton
                     icon={<CheckIcon />}
@@ -288,9 +289,8 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                     mr={2}
                   />
                 )}
-                <Text fontWeight="bold">Group Description:</Text>
+                
               </Box>
-
               {editing ? (
                 <Textarea
                   placeholder="Group Description"
@@ -320,6 +320,22 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                 Update
               </Button>
             </FormControl>
+            <FormControl>
+              <Input
+                placeholder="Add Tags"
+                mb={1}
+                onChange={(e) => handleSearch(e.target.value)}
+              />
+            </FormControl>
+            <Box w="100%" d="flex" flexWrap="wrap" pb={3}>
+              {selectedChat.tags.map((t) => (
+                <TagBadgeItem
+                  key={t._id}
+                  user={t}
+                  handleFunction={() => handleRemove(t)}
+                />
+              ))}
+            </Box>
             <FormControl>
               <Input
                 placeholder="Add User to group"

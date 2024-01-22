@@ -3,9 +3,6 @@
 
 Clone the project
 
-```bash
-  git clone https://github.com/piyush-eon/mern-chat-app
-```
 
 Go to the project directory
 

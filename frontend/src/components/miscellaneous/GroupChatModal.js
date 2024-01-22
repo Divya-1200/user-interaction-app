@@ -12,20 +12,29 @@ import {
   Input,
   useToast,
   Box,
+  Textarea,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useState } from "react";
 import { ChatState } from "../../Context/ChatProvider";
 import UserBadgeItem from "../userAvatar/UserBadgeItem";
 import UserListItem from "../userAvatar/UserListItem";
+import TagListItem from "../userAvatar/TagListItem";
+import TagBadgeItem from "../userAvatar/TagBadgeItem";
+
 
 const GroupChatModal = ({ children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [groupChatName, setGroupChatName] = useState();
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedTags, setSelectedTag] = useState([]);
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
+  const [groupChatDescription, setGroupChatDescription] = useState("");
+  const [tags, setTags] = useState("");
   const [loading, setLoading] = useState(false);
+  const [tagSearch, setTagSearch] = useState("");
+  const [searchTagResult, setSearchTagResult] = useState([]);
   const toast = useToast();
 
   const { user, chats, setChats } = ChatState();
@@ -44,13 +53,51 @@ const GroupChatModal = ({ children }) => {
 
     setSelectedUsers([...selectedUsers, userToAdd]);
   };
-
+  const handleTags = async (tagToAdd) => {
+    if(selectedTags.includes(tagToAdd)){
+      toast({
+        title: "Tag already added",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
+      return;
+    }
+    setSelectedTag([...selectedTags, tagToAdd]);
+  };
+  const searchTags = async (query) => {
+    setTagSearch(query);
+    if(!query){
+      return;
+    }
+    try{
+      setLoading(true);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.get(`http://localhost:3388/api/tag?search=${tagSearch}`, config);
+      // console.log(data);
+      setLoading(false);
+      setSearchTagResult(data);
+    } catch (error) {
+      toast({
+        title: "Error Occured!",
+        description: "Failed to Load the Search Results",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
+    }
+  };
   const handleSearch = async (query) => {
     setSearch(query);
     if (!query) {
       return;
     }
-
     try {
       setLoading(true);
       const config = {
@@ -59,7 +106,6 @@ const GroupChatModal = ({ children }) => {
         },
       };
       const { data } = await axios.get(`http://localhost:3388/api/user?search=${search}`, config);
-      console.log(data);
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
@@ -69,7 +115,7 @@ const GroupChatModal = ({ children }) => {
         status: "error",
         duration: 5000,
         isClosable: true,
-        position: "bottom-left",
+        position: "top",
       });
     }
   };
@@ -100,6 +146,8 @@ const GroupChatModal = ({ children }) => {
         `http://localhost:3388/api/chat/group`,
         {
           name: groupChatName,
+          decription: groupChatDescription,
+          tags: JSON.stringify(selectedTags.map((t) => t._id)),
           users: JSON.stringify(selectedUsers.map((u) => u._id)),
         },
         config
@@ -115,10 +163,10 @@ const GroupChatModal = ({ children }) => {
         position: "top",
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       toast({
         title: "Failed to Create the Chat!",
-        description: error.response.data,
+        // description: error.response.data,
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -152,12 +200,20 @@ const GroupChatModal = ({ children }) => {
               />
             </FormControl>
             <FormControl>
+              <Textarea
+                placeholder="Description"
+                mb={3}
+                onChange={(e) => setGroupChatDescription(e.target.value)}
+              />
+            </FormControl>
+            <FormControl>
               <Input
-                placeholder="Add Users eg: John, Piyush, Jane"
+                placeholder="Add Users eg: John, Jane"
                 mb={1}
                 onChange={(e) => handleSearch(e.target.value)}
               />
             </FormControl>
+            
             <Box w="100%" d="flex" flexWrap="wrap">
               {selectedUsers.map((u) => (
                 <UserBadgeItem
@@ -178,6 +234,36 @@ const GroupChatModal = ({ children }) => {
                     key={user._id}
                     user={user}
                     handleFunction={() => handleGroup(user)}
+                  />
+                ))
+            )}
+            <FormControl>
+              <Input
+                placeholder="Add Tags for this Discussions"
+                mb={1}
+                onChange={(e) => searchTags(e.target.value)}
+              />
+            </FormControl>
+            <Box w="100%" d="flex" flexWrap="wrap">
+              {selectedTags.map((t) => (
+                <TagBadgeItem
+                  key={t._id}
+                  tag={t}
+                  handleFunction={() => handleDelete(t)}
+                />
+              ))}
+            </Box>
+            {loading ? (
+              // <ChatLoading />
+              <div>Loading...</div>
+            ) : (
+              searchTagResult
+                ?.slice(0, 4)
+                .map((tag) => (
+                  <TagListItem
+                    key={tag._id}
+                    tag={tag}
+                    handleFunction={() => handleTags(tag)}
                   />
                 ))
             )}

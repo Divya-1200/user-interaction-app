@@ -63,7 +63,7 @@ function SideDrawer() {
         status: "warning",
         duration: 5000,
         isClosable: true,
-        position: "top-left",
+        position: "top",
       });
       return;
     }
@@ -88,7 +88,7 @@ function SideDrawer() {
         status: "error",
         duration: 5000,
         isClosable: true,
-        position: "bottom-left",
+        position: "top",
       });
     }
   };
@@ -117,7 +117,7 @@ function SideDrawer() {
         status: "error",
         duration: 5000,
         isClosable: true,
-        position: "bottom-left",
+        position: "top",
       });
     }
   };

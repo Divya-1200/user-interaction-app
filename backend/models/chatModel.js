@@ -11,7 +11,7 @@ const chatModel = mongoose.Schema(
     },
     groupAdmin: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     groupDescription: {type: String, default: " " },
-    tag :[{type: mongoose.Schema.Types.ObjectId, ref: "Tag"}] ,
+    tags :[{type: mongoose.Schema.Types.ObjectId, ref: "Tag"}] ,
   },
   { timestamps: true }
 );
