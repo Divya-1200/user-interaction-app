@@ -10,6 +10,7 @@ const allTags = asyncHandler(async (req, res) => {
 
     try{
       const tags = await Tag.find({ tag: { $regex: new RegExp(keyword, 'i'), $ne: keyword } });
+      console.log("tags ", tags);
       res.send(tags);
     }
     catch(err) {

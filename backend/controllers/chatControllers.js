@@ -59,6 +59,7 @@ const fetchChats = asyncHandler(async (req, res) => {
     Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
       .populate("users", "-password")
       .populate("groupAdmin", "-password")
+      .populate("tags","-password")
       .populate("latestMessage")
       .sort({ updatedAt: -1 })
       .then(async (results) => {
@@ -183,14 +184,41 @@ const removeFromGroup = asyncHandler(async (req, res) => {
     }
   )
     .populate("users", "-password")
+    .populate("tags","-password")
     .populate("groupAdmin", "-password");
 
   if (!removed) {
+    console.log("error occured");
     res.status(404);
     throw new Error("Chat Not Found");
   } else {
     res.json(removed);
   }
+});
+
+const removeFromTag = asyncHandler(async(req, res) => {
+  console.log("here we are");
+  const {chatId, tagId} = req.body;
+  const removedTag = await Chat.findByIdAndUpdate(
+    chatId,
+    {
+      $pull: { tags: tagId },
+    },
+    {
+      new: true,
+    }
+    )
+    .populate("users", "-password")
+    .populate("tags","-password")
+    .populate("groupAdmin", "-password");
+
+    if(!removedTag){
+      console.log("error occured");
+      res.status(404);
+      throw new Error("Chat Not Found");
+    } else {
+      res.json(removedTag);
+    }
 });
 
 // @desc    Add user to Group / Leave
@@ -221,6 +249,52 @@ const addToGroup = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc  addFromTag
+// @route  tag/add
+// @access  Protected
+const addFromTag  = asyncHandler(async (req, res) => {
+  const { chatId, tag } = req.body;
+  console.log(tag);
+  var tagId;
+  if(tag._id){
+    tagId = tag._id;
+    console.log("new tag id"+tagId);
+  }
+  else{
+    const tagFind = await Tag.findOne({tag:tag}); // Chance of inserting duplicate tag
+    if(tagFind){
+      tagId = tagFind._id;
+      console.log("find tag id"+tagId);
+    }
+    else{
+      const newTag = await Tag.create({
+       tag,
+      });
+      tagId = newTag._id;
+      console.log("new added tag id"+tagId);
+    }
+  }
+  const added = await Chat.findByIdAndUpdate(
+    chatId,
+    {
+      $push: { tags: tagId },
+    },
+    {
+      new: true,
+    }
+  )
+    .populate("users", "-password")
+    .populate("tags",  "-password")
+    .populate("groupAdmin", "-password");
+
+  if (!added) {
+    res.status(404);
+    throw new Error("Chat Not Found");
+  } else {
+    res.json(added);
+  }
+});
+
 module.exports = {
   accessChat,
   fetchChats,
@@ -229,4 +303,6 @@ module.exports = {
   addToGroup,
   removeFromGroup,
   updateDescription,
+  removeFromTag,
+  addFromTag,
 };

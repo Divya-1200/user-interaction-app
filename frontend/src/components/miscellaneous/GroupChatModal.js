@@ -31,7 +31,6 @@ const GroupChatModal = ({ children }) => {
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [groupChatDescription, setGroupChatDescription] = useState("");
-  const [tags, setTags] = useState("");
   const [loading, setLoading] = useState(false);
   const [tagSearch, setTagSearch] = useState("");
   const [searchTagResult, setSearchTagResult] = useState([]);
@@ -65,6 +64,10 @@ const GroupChatModal = ({ children }) => {
       return;
     }
     setSelectedTag([...selectedTags, tagToAdd]);
+  };
+  const handleDeleteTag = (tag) => {
+    setSelectedTag(selectedTags.filter((sel) => sel._id !== tag._id));
+
   };
   const searchTags = async (query) => {
     setTagSearch(query);
@@ -249,7 +252,7 @@ const GroupChatModal = ({ children }) => {
                 <TagBadgeItem
                   key={t._id}
                   tag={t}
-                  handleFunction={() => handleDelete(t)}
+                  handleFunction={() => handleDeleteTag(t)}
                 />
               ))}
             </Box>
