@@ -11,6 +11,7 @@ import ProfileModal from "./miscellaneous/ProfileModal";
 import ScrollableChat from "./ScrollableChat";
 import Lottie from "react-lottie";
 import animationData from "../animations/typing.json";
+import TagListItem from "./userAvatar/TagListItem";
 
 import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
@@ -21,12 +22,17 @@ var socket, selectedChatCompare;
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [tagLoading, setTagLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [socketConnected, setSocketConnected] = useState(false);
   const [typing, setTyping] = useState(false);
   const [istyping, setIsTyping] = useState(false);
   const toast = useToast();
-
+  // const [tags, setTags] = useState([]);
+  const [tagSearch, setTagSearch] = useState(false);
+  const [tagSearchKey, setTagSearchKey] = useState('');
+  const [searchTagResult, setSearchTagResult] = useState([]);
+  const [messageTags, setMessageTags] = useState([]);
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -136,12 +142,37 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       }
     });
   });
+  
 
-  const typingHandler = (e) => {
+  const typingHandler =  async (e) => {
     setNewMessage(e.target.value);
 
     if (!socketConnected) return;
-
+    if (!e.target.value.endsWith("#")){
+      setTagSearch(false); 
+      setSearchTagResult([]);
+    }
+    if (e.target.value.endsWith("#") || tagSearch) {  
+      console.log("found the value"); 
+      setTagSearch(true); 
+      const query = e.target.value.split("#")[1];
+      console.log(query);
+      setTagSearchKey(query);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      console.log("searching tag");
+      try {
+        const { data } =  await axios.get(
+          `http://localhost:3388/api/tag?search=${query}`, config
+        );
+        setSearchTagResult(data);
+      } catch (error) {
+        console.error("Error fetching tags:", error);
+      }
+    }
     if (!typing) {
       setTyping(true);
       socket.emit("typing", selectedChat._id);
@@ -158,6 +189,24 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }, timerLength);
   };
 
+  const handleAddTag = async (tag) => {
+    console.log("addeing",tag)
+    setMessageTags(prevTags => [...prevTags, tag]);
+    setNewMessage((prevMessage) => {
+      const messageWithoutTag = prevMessage.split('#')[0];
+      console.log("message without tag", messageWithoutTag);
+      return `${messageWithoutTag}#${tag.tag}`;
+  });
+    console.log("message tags ",messageTags);
+    setTagSearch(false);
+    setSearchTagResult([]);
+  };
+
+  const handleKeyDown = async (e) => {
+    if (e.keyCode === 32 && tagSearch) {
+      handleAddTag(tagSearchKey);
+    }
+  };
   return (
     <>
       {selectedChat ? (
@@ -239,13 +288,33 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               ) : (
                 <></>
               )}
+              {loading ? (
+              // <ChatLoading />
+              <div>Loading...</div>
+            ) : (
+              Array.isArray(searchTagResult) ? (
+                searchTagResult
+                  .slice(0, 4)
+                  .map((tag) => (
+                    <TagListItem
+                      key={tag._id}
+                      tag={tag}
+                      handleFunction={() => handleAddTag(tag)}
+                    />
+                  ))
+              ) : (
+                <div>No tags found</div>
+              )
+            )}
               <Input
                 variant="filled"
                 bg="#E0E0E0"
                 placeholder="Enter a message.."
                 value={newMessage}
                 onChange={typingHandler}
+                onKeyDown={handleKeyDown}
               />
+             
             </FormControl>
           </Box>
         </>

@@ -461,7 +461,8 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
               // <ChatLoading />
               <div>Loading...</div>
             ) : (
-              searchTagResult
+              
+                searchTagResult
                 ?.slice(0, 4)
                 .map((tag) => (
                   <TagListItem
@@ -470,6 +471,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                     handleFunction={() => handleAddTag(tag)}
                   />
                 ))
+                
             )}
           </ModalBody>
           <ModalFooter style={{ display: 'flex', justifyContent: 'space-between' }}>
