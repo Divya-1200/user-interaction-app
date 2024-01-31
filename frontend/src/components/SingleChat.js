@@ -82,15 +82,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage) {
-      // console.log("message received", newMessage);
-      if(event.key === 'Enter' && tagSearch){
-        console.log("enter is pressed");
-        setMessageTags((prevMessageTags) => [...prevMessageTags, tagSearchKey]);  
-        setTagSearch(false);
-        setSearchTagResult([]);
-        console.log("mesage tags after eneter ",messageTags);
-      }
-      console.log("selected tags ",messageTags);
+      console.log("message received", newMessage);
       socket.emit("stop typing", selectedChat._id);
       try {
         const config = {
@@ -100,18 +92,23 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           },
         };
         setNewMessage("");
-        setMessageTags([]);
-        const { data } = await axios.post(
-          "http://localhost:3388/api/message",
-          {
-            content : newMessage,
-            tags    : messageTags,
-            chatId  : selectedChat,
-          },
-          config
-        );
-        socket.emit("new message", data);
-        setMessages([...messages, data]);
+        setMessageTags(async (prevMessageTags) => {
+          const updatedTags = [...prevMessageTags];
+          const { data } = await axios.post(
+            "http://localhost:3388/api/message",
+            {
+              content : newMessage,
+              tags    : updatedTags,
+              chatId  : selectedChat,
+            },
+            config
+          );
+          socket.emit("new message", data);
+          setMessages([...messages, data]);
+          setMessageTags([]);
+        });
+        // setMessageTags([]);
+       
       } catch (error) {
         toast({
           title: "Error Occured!",
@@ -204,7 +201,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }, timerLength);
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown =  async (e) => {
     if (e.key === " " && tagSearch) {
       console.log("space is pressed");
       setMessageTags((prevMessageTags) => [...prevMessageTags, tagSearchKey]);  
@@ -212,7 +209,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       setSearchTagResult([]);
       console.log("mesage tags after space ",messageTags);
     }
-
+    
+    if(e.key === 'Enter' && tagSearch){
+      console.log("enter is pressed");
+      console.log(tagSearchKey);
+      setMessageTags((prevMessageTags) => [...prevMessageTags, tagSearchKey]);  
+      setTagSearch(false);
+      setSearchTagResult([]);
+  
+    }
   }
   
   const handleAddTag = (tag) => {

@@ -21,6 +21,14 @@ const ScrollableChat = ({ messages }) => {
   const handleDoubleTap = () => {
     setReplyMode(!replyMode);
   };
+  const renderTags = (tags) => {
+    return tags.map((tag) => (
+      <span key={tag._id} style={{ color: "blue", fontWeight: "bold" }}>
+        #{tag.tag}{" "}
+      </span>
+    ));
+  };
+
   return (
     <ScrollableFeed>
       {messages &&
@@ -59,6 +67,8 @@ const ScrollableChat = ({ messages }) => {
               )}
               </div>
               <div>{m.content}</div>
+              <hr style={{ margin: "5px 0" }}></hr>
+              <div>{renderTags(m.tags)}</div>
               <div style={{ fontSize: "0.6em", color: "#888" }}>
                {formatCreatedAt(m.createdAt)}
               </div>

@@ -11,6 +11,7 @@ const allMessages = asyncHandler(async (req, res) => {
   try {
     const messages = await Message.find({ chat: req.params.chatId })
       .populate("sender", "name pic email")
+      .populate("tags")
       .populate("chat");
     res.json(messages);
   } catch (error) {
@@ -29,23 +30,24 @@ const sendMessage = asyncHandler(async (req, res) => {
     console.log("Invalid data passed into request");
     return res.sendStatus(400);
   }
-  console.log(tags);
-  let updatedTags = tags;
- if(!tags._id){
-
-  const tagFind = await Tag.findOne({tag:tags}); // Chance of inserting duplicate tag
-    if(tagFind){
-      updatedTags = tagFind;
-      console.log("find tag id"+tags);
+  let updatedTags = [];
+console.log("tags: " + tags);
+for (const tag of tags) {
+  if (!tag._id) {
+    const tagFind = await Tag.findOne({ tag });
+    
+    if (tagFind) {
+      updatedTags.push(tagFind);
+      console.log("Found tag ID: " + tagFind._id);
+    } else {
+      const newTag = await Tag.create({ tag });
+      updatedTags.push(newTag);
+      console.log("Newly added tag ID: " + newTag._id);
     }
-    else{
-      const newTag = await Tag.create({
-       tags,
-      });
-      updatedTags = newTag;
-      console.log("new added tag id"+ updatedTags);
-    }
- }
+  } else {
+    updatedTags.push(tag);
+  }
+}
   var newMessage = {
     sender: req.user._id,
     content: content,
