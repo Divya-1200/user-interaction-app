@@ -185,11 +185,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         console.error("Error fetching tags:", error);
       }
     }
-    if(!e.target.value.endsWith("#") && tagSearch){
-      setTagSearch(false);
-      setSearchTagResult([]);
-      setTagSearchKey('');
-    }
+   
     
     let lastTypingTime = new Date().getTime();
     var timerLength = 3000;
@@ -215,6 +211,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       setTagSearch(false);
       setSearchTagResult([]);
   
+    }
+    if (e.key === "Backspace") {
+      // Check if the last character is a hashtag
+      if (newMessage.endsWith("#")) {
+        // Remove the hashtag and update state accordingly
+        setTagSearch(false);
+        setSearchTagResult([]);
+        setTagSearchKey('');
+      }
     }
   }
   
