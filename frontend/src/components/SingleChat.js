@@ -34,8 +34,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [searchTagResult, setSearchTagResult] = useState([]);
   const [messageTags, setMessageTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchTagResultQuery, setSearchTagResultQuery] = useState('');
-  const [searchUserResultQuery, setSearchUserResultQuery] = useState('');
+  // const [searchTagResultQuery, setSearchTagResultQuery] = useState('');
+  // const [searchUserResultQuery, setSearchUserResultQuery] = useState('');
 
   const defaultOptions = {
     loop: true,
@@ -83,7 +83,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage) {
       // console.log("message received", newMessage);
-      console.log("selected tags",messageTags);
+      if(event.key === 'Enter' && tagSearch){
+        console.log("enter is pressed");
+        setMessageTags((prevMessageTags) => [...prevMessageTags, tagSearchKey]);  
+        setTagSearch(false);
+        setSearchTagResult([]);
+        console.log("mesage tags after eneter ",messageTags);
+      }
+      console.log("selected tags ",messageTags);
       socket.emit("stop typing", selectedChat._id);
       try {
         const config = {
@@ -157,18 +164,17 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const typingHandler =  async (e) => {
     setNewMessage(e.target.value);
-
+    // console.log("Updated typingHandler:", e);
     if (!socketConnected) return;
-    if (!e.target.value.endsWith("#")){
-      console.log("inside here");
-      const bool = await false;
-      setTagSearch(bool); 
-      setSearchTagResult([]);
+    if (!typing) {
+      setTyping(true);
+      socket.emit("typing", selectedChat._id);
     }
-    if (e.target.value.endsWith("#") || tagSearch) {  
-      setTagSearch(true); 
-      const query = e.target.value.split("#")[1];
-      console.log(query);
+    if (e.target.value.endsWith("#") || tagSearch) {
+      console.log("hashtag detected");
+      const query = e.target.value.split("#").pop(); // Extract the tag query after "#"
+      console.log("query ", query);
+      setTagSearch(true);
       setTagSearchKey(query);
       const config = {
         headers: {
@@ -176,18 +182,16 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         },
       };
       try {
-        const { data } =  await axios.get(
-          `http://localhost:3388/api/tag?search=${query}`, config
+        const { data } = await axios.get(
+          `http://localhost:3388/api/tag?search=${query}`,
+          config
         );
         setSearchTagResult(data);
       } catch (error) {
         console.error("Error fetching tags:", error);
       }
     }
-    if (!typing) {
-      setTyping(true);
-      socket.emit("typing", selectedChat._id);
-    }
+    
     let lastTypingTime = new Date().getTime();
     var timerLength = 3000;
     setTimeout(() => {
@@ -199,118 +203,29 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       }
     }, timerLength);
   };
-  const handleSearch = () => {
-    const filteredMessages = messages.filter((message) =>
-      message.content.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setMessages(filteredMessages);
-  };
-  const handleAddTag = async (tag) => {
-    console.log("adding", tag);
-    setMessageTags(prevTags => {
-      // Check if the tag already exists in the array
-      if (!prevTags.includes(tag)) {
-        // Update messageTags
-        const newTags = [...prevTags, tag];
-        
-        // Perform actions after updating messageTags
-        console.log("added ", newTags);
-        console.log("prevTags:", prevTags);
-        console.log("newTags:", newTags);
-        setNewMessage((prevMessage) => {
-          const messageWithoutTag = prevMessage.split('#')[0];
-          const finalTag = tag.tag ? tag.tag : tag;
-          return `${messageWithoutTag}#${finalTag}`;
-        });
-  
-        setTagSearch(false);
-        setSearchTagResult([]);
-  
-        // Return the updated state
-        return newTags;
-      }
-      console.log("");
-      // If the tag already exists, return the current state without modification
-      return prevTags;
-    });
-  };
 
-  const newSearchQuery = async (e) => {
-    setSearchQuery(e.target.value);
-    if(!e.target.value.startsWith("#")){
-      setSearchTagResultQuery([]);
+  const handleKeyDown = (e) => {
+    if (e.key === " " && tagSearch) {
+      console.log("space is pressed");
+      setMessageTags((prevMessageTags) => [...prevMessageTags, tagSearchKey]);  
+      setTagSearch(false);
+      setSearchTagResult([]);
+      console.log("mesage tags after space ",messageTags);
     }
-    if(!e.target.value.startsWith("@")){
-      setSearchTagResultQuery([]);
-    }
-    if(e.target.value.startsWith("#")){
-      console.log("found the value"); 
-      setTagSearch(true); 
-      const query = e.target.value.split("#")[1];
-      console.log(query);
-      setTagSearchKey(query);
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-      console.log("searching tag");
-      try {
-        const { data } =  await axios.get(
-          `http://localhost:3388/api/tag?search=${query}`, config
-        );
-        setSearchTagResultQuery(data);
-      } catch (error) {
-        console.error("Error fetching tags:", error);
-      }
-    }
-    if(!e.target.value.startsWith("@")){
-      setSearchUserResultQuery([]);
-    }
-    if(e.target.value.startsWith('@')){
-      
-      try {
-        
-        const query = e.target.value.split("@")[1];
-        const config = {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        };
-        const { data } = await axios.get(`http://localhost:3388/api/user?search=${query}`, config);
-        console.log(data);
-  
-        setSearchUserResultQuery(data);
-      } catch (error) {
-        toast({
-          title: "Error Occured!",
-          description: "Failed to Load the Search Results",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "top",
-        });
-      
-      }
-    }
-  }
-  const handleKeyDown = async (e) => {
-    console.log("tagSearch ", tagSearch);
-    if (e.key === ' ' && tagSearch || e.key === 'Enter' && tagSearch) {
-      handleAddTag(tagSearchKey);
-    }
-  };
-  const handleSearchUser = async (user) => {
-    console.log(user.name);
-    setSearchUserResultQuery([]);
-    setSearchQuery(user.name)
+
   }
   
-   
-  const handleSearchTag = async (tag) => {
-    setSearchTagResultQuery([]);
-    setSearchQuery(tag.tag);
-  }
+  const handleAddTag = (tag) => {
+    const lastHashIndex = newMessage.lastIndexOf('#');
+    if(!messageTags.includes(tag.tag)){
+      setMessageTags([...messageTags, tag.tag]); // Add the selected tag to messageTags
+    }
+    setSearchTagResult([]); // Clear the tag search results
+    setTagSearch(false); // Reset tag search state
+    setNewMessage(
+      (prevMessage) =>
+        prevMessage.substring(0, lastHashIndex) + `#${tag.tag}` + prevMessage.substring(lastHashIndex + tag.tag.length + 1)
+    );  };
 
   return (
     <>
@@ -350,48 +265,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 </>
               ))}
           </Text>
-          <Input
-        ml={4} mb={7}
-        variant="filled"
-        placeholder="Search messages..."
-        value={searchQuery}
-        onChange={newSearchQuery}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') handleSearch();
-        }}
-      />
-      
-      {Array.isArray(searchUserResultQuery) ? (
-          searchUserResultQuery
-            .slice(0, 4)
-            .map((tag) => (
-              <UserListItem
-                  key={user._id}
-                  user={user}
-                  handleFunction={() => handleSearchUser(tag)}
-                />
-            ))
-        ) : (
-          <div></div>
-        )}
-      {loading ? (
-        // <ChatLoading />
-        <div>Loading...</div>
-      ) : (
-        Array.isArray(searchTagResultQuery) ? (
-          searchTagResultQuery
-            .slice(0, 4)
-            .map((tag) => (
-              <TagListItem
-                key={tag._id}
-                tag={tag}
-                handleFunction={() => handleSearchTag(tag)}
-              />
-            ))
-        ) : (
-          <div></div>
-        )
-      )}
+     
           <Box
             d="flex"
             flexDir="column"
