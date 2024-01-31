@@ -82,7 +82,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage) {
-      console.log("message received", newMessage);
       socket.emit("stop typing", selectedChat._id);
       try {
         const config = {
@@ -155,22 +154,19 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     });
   });
   useEffect(() => {
-    console.log("Updated messageTags:", messageTags);
+    // console.log("Updated messageTags:", messageTags);
 
     }, [messageTags]);
 
   const typingHandler =  async (e) => {
     setNewMessage(e.target.value);
-    // console.log("Updated typingHandler:", e);
     if (!socketConnected) return;
     if (!typing) {
       setTyping(true);
       socket.emit("typing", selectedChat._id);
     }
     if (e.target.value.endsWith("#") || tagSearch) {
-      console.log("hashtag detected");
       const query = e.target.value.split("#").pop(); // Extract the tag query after "#"
-      console.log("query ", query);
       setTagSearch(true);
       setTagSearchKey(query);
       const config = {
@@ -184,9 +180,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           config
         );
         setSearchTagResult(data);
+        console.log(data);
       } catch (error) {
         console.error("Error fetching tags:", error);
       }
+    }
+    if(!e.target.value.endsWith("#") && tagSearch){
+      setTagSearch(false);
+      setSearchTagResult([]);
+      setTagSearchKey('');
     }
     
     let lastTypingTime = new Date().getTime();
@@ -203,16 +205,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const handleKeyDown =  async (e) => {
     if (e.key === " " && tagSearch) {
-      console.log("space is pressed");
       setMessageTags((prevMessageTags) => [...prevMessageTags, tagSearchKey]);  
       setTagSearch(false);
       setSearchTagResult([]);
-      console.log("mesage tags after space ",messageTags);
     }
     
     if(e.key === 'Enter' && tagSearch){
-      console.log("enter is pressed");
-      console.log(tagSearchKey);
       setMessageTags((prevMessageTags) => [...prevMessageTags, tagSearchKey]);  
       setTagSearch(false);
       setSearchTagResult([]);
