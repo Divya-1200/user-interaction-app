@@ -34,6 +34,7 @@ const GroupChatModal = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [tagSearch, setTagSearch] = useState("");
   const [searchTagResult, setSearchTagResult] = useState([]);
+  
   const toast = useToast();
 
   const { user, chats, setChats } = ChatState();
@@ -177,7 +178,38 @@ const GroupChatModal = ({ children }) => {
       });
     }
   };
-
+  /**Need to handle single tag addition */
+  // const handleAddTag = async (tag) => {
+  //   try {
+  //     setLoading(true);
+  //     const config = {
+  //       headers: {
+  //         Authorization: `Bearer ${user.token}`,
+  //       },
+  //     };
+  //     const { data } = await axios.put(
+  //       `http://localhost:3388/api/chat/tag/add`,
+  //       {
+  //         chatId: selectedChat._id,
+  //         tag: tag,
+  //       },
+  //       config
+  //     );
+  //     setSelectedChat(data);
+  //     setFetchAgain(!fetchAgain);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     toast({
+  //       title: "Error Occured!",
+  //       description: error.response.data.message,
+  //       status: "error",
+  //       duration: 5000,
+  //       isClosable: true,
+  //       position: "top",
+  //     });
+  //     setLoading(false);
+  //   }
+  // };
   return (
     <>
       <span onClick={onOpen}>{children}</span>
@@ -245,6 +277,11 @@ const GroupChatModal = ({ children }) => {
                 placeholder="Add Tags for this Discussions"
                 mb={1}
                 onChange={(e) => searchTags(e.target.value)}
+                onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleTags(e.target.value);
+                    }
+                  }}
               />
             </FormControl>
             <Box w="100%" d="flex" flexWrap="wrap">

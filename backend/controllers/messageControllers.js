@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const Message = require("../models/messageModel");
 const User = require("../models/userModel");
 const Chat = require("../models/chatModel");
+const Tag  = require("../models/tagModel"); 
 
 //@description     Get all Messages
 //@route           GET /api/Message/:chatId
@@ -22,17 +23,34 @@ const allMessages = asyncHandler(async (req, res) => {
 //@route           POST /api/Message/
 //@access          Protected
 const sendMessage = asyncHandler(async (req, res) => {
-  const { content, chatId } = req.body;
+  const { content, tags, chatId } = req.body;
 
   if (!content || !chatId) {
     console.log("Invalid data passed into request");
     return res.sendStatus(400);
   }
+  console.log(tags);
+  let updatedTags = tags;
+ if(!tags._id){
 
+  const tagFind = await Tag.findOne({tag:tags}); // Chance of inserting duplicate tag
+    if(tagFind){
+      updatedTags = tagFind;
+      console.log("find tag id"+tags);
+    }
+    else{
+      const newTag = await Tag.create({
+       tags,
+      });
+      updatedTags = newTag;
+      console.log("new added tag id"+ updatedTags);
+    }
+ }
   var newMessage = {
     sender: req.user._id,
     content: content,
     chat: chatId,
+    tags: updatedTags,
   };
 
   try {
