@@ -15,6 +15,8 @@ import { useRef } from 'react';
 const ScrollableChat = ({ messages ,  scrollToMessageId}) => {
   const { user } = ChatState();
   const messagesContainerRef = useRef();
+  const messageRefs = useRef(messages.map(() => React.createRef()));
+
   const formatCreatedAt = (createdAt) => {
     const date = new Date(createdAt);
     return date.toLocaleTimeString().substring(0,5);
@@ -40,14 +42,12 @@ const ScrollableChat = ({ messages ,  scrollToMessageId}) => {
 
   const scrollToMessage = (messageId) => {
     const messageIndex = messages.findIndex((message) => message._id === messageId);
-    if (messageIndex !== -1) {
-      console.log("messagesContainerRef", messagesContainerRef.current.props.children[messageIndex]);
-      const messageElement = messagesContainerRef.current.props.children[messageIndex];
-      console.log("messagesContainerRef view", messageElement);
-
-      if (messageElement) {
-        messageElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+    console.log("scrollToMessage ", messageRefs);
+    if (messageIndex !== -1 && messageRefs.current[messageIndex].current) {
+      messageRefs.current[messageIndex].current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
     }
   };
 
@@ -58,7 +58,7 @@ const ScrollableChat = ({ messages ,  scrollToMessageId}) => {
           <div
             style={{ display: 'flex' }}
             key={m._id}
-            ref={i === messages.length - 1 ? messagesContainerRef : null}
+            ref={messageRefs.current[i]} 
             onDoubleClick={handleDoubleTap}            
           >
             {(isSameSender(messages, m, i, user._id) ||
