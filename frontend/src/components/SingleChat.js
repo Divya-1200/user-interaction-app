@@ -42,7 +42,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [showSearchBox, setShowSearchBox] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [scrollToMessageId, setScrollToMessageId] = useState(null);
-
+  const [priorityMessage, setPriorityMessage] = useState(false);
 
   const defaultOptions = {
     loop: true,
@@ -106,12 +106,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               content : newMessage,
               tags    : updatedTags,
               chatId  : selectedChat,
+              priority : priorityMessage,
+              users : selectedChat.users,
             },
             config
           );
           socket.emit("new message", data);
           setMessages([...messages, data]);
           setMessageTags([]);
+          setPriorityMessage(false);
         });
         // setMessageTags([]);
        
@@ -128,6 +131,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
+
+
+  
   useEffect(() => {
     socket = io(ENDPOINT);
     socket.emit("setup", user);
@@ -191,7 +197,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         console.error("Error fetching tags:", error);
       }
     }
-   
+    if(e.target.value.startsWith("!!") && !priorityMessage){
+      setPriorityMessage(true);
+    }
+    if(!e.target.value.startsWith("!!") && priorityMessage){
+      setPriorityMessage(false);
+    }
     
     let lastTypingTime = new Date().getTime();
     var timerLength = 3000;

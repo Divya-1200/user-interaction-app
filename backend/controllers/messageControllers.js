@@ -3,6 +3,8 @@ const Message = require("../models/messageModel");
 const User = require("../models/userModel");
 const Chat = require("../models/chatModel");
 const Tag  = require("../models/tagModel"); 
+const nodemailer = require('nodemailer');
+
 
 //@description     Get all Messages
 //@route           GET /api/Message/:chatId
@@ -24,7 +26,7 @@ const allMessages = asyncHandler(async (req, res) => {
 //@route           POST /api/Message/
 //@access          Protected
 const sendMessage = asyncHandler(async (req, res) => {
-  const { content, tags, chatId } = req.body;
+  const { content, tags, chatId, priority, users } = req.body;
 
   if (!content || !chatId) {
     console.log("Invalid data passed into request");
@@ -54,7 +56,7 @@ for (const tag of tags) {
     chat: chatId,
     tags: updatedTags,
   };
-
+ console.log(req.user);
   try {
     var message = await Message.create(newMessage);
 
@@ -72,6 +74,62 @@ for (const tag of tags) {
     res.status(400);
     throw new Error(error.message);
   }
+
+  if(priority){
+    sendPriorityMessageEmail(users, content, req.user.name);
+  }
+
 });
+
+const sendPriorityMessageEmail = async (users, content, sender) => {
+  const userEmails = users.map((user) => user.email);
+
+  try {
+    await sendEmail({
+      to: userEmails,
+      subject: 'Priority Message',
+      body: `A priority message has been sent from ${sender} : ${content}`,
+    })
+    .then(() => console.log('Email sent successfully'))
+    .catch((error) => console.error('Failed to send email:', error.message));
+  } catch (error) {
+    console.error('Error sending priority message email: ', error.message);
+    // Handle the error accordingly
+  }
+};
+
+const sendEmail = async ({ to, subject, body }) => {
+  // Create a nodemailer transporter
+  to = 'divya.perumal120@gmail.com';
+  console.log('here in send mail');
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com", // Your SMTP server host
+    port: 587, // Your SMTP server port (this can vary, check with your email provider)
+    secure: false, // Use SSL/TLS if true, false for other ports
+    auth: {
+      user: 'd123j45mail@gmail.com', // Your email address
+      pass: 'redgnncenmzdgqre', // Your email password
+    },
+  });
+
+  // Setup email data
+  const mailOptions = {
+    from: 'd123j45mail@gmail.com', // Sender address
+    to, // List of recipients
+    subject, // Subject line
+    text: body, // Plain text body
+  };
+
+  try {
+    // Send the email
+    const info = await transporter.sendMail(mailOptions);
+    console.log('here in send mail 123');
+    console.log('Email sent: ', info.response);
+  } catch (error) {
+    console.error('Error sending email: ', error);
+    throw new Error('Error sending email');
+  }
+};
+
 
 module.exports = { allMessages, sendMessage };
