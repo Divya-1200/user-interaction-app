@@ -18,9 +18,6 @@ import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { ChatState } from "../Context/ChatProvider";
 import { Tooltip,  List, ListItem } from "@chakra-ui/react";
-// import { Tooltip } from "@chakra-ui/tooltip";
-import { Button } from "@chakra-ui/button";
-import { useDisclosure } from "@chakra-ui/hooks";
 
 
 const ENDPOINT = "http://localhost:3388";
@@ -44,8 +41,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchBox, setShowSearchBox] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
-  // const [searchQuery, setSearchQuery] = useState('');
-  // const [searchResults, setSearchResults] = useState([]);
+  const [scrollToMessageId, setScrollToMessageId] = useState(null);
+
 
   const defaultOptions = {
     loop: true,
@@ -291,7 +288,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const handleChange = (e) => {
     setSearch(e.target.value);
     console.log("handleChange",e.target.value);
-    if(e.target.value == ''){
+    if(e.target.value === ''){
       setSearchResults([]);
     }
     else{
@@ -301,6 +298,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const handleSearchResults = (clickedIndex) => {
     console.log(clickedIndex);
+    setScrollToMessageId(clickedIndex);
     setSearchResults([]);
 
   };
@@ -389,7 +387,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               />
             ) : (
               <div className="messages">
-                <ScrollableChat messages={messages}/>
+                <ScrollableChat messages={messages} scrollToMessageId={scrollToMessageId} />
               </div>
             )}
 

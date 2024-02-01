@@ -2,6 +2,7 @@ import { Avatar } from "@chakra-ui/avatar";
 import { Tooltip } from "@chakra-ui/tooltip";
 import ScrollableFeed from "react-scrollable-feed";
 import React, { useEffect, useState } from 'react';
+
 import {
   isLastMessage,
   isSameSender,
@@ -11,7 +12,7 @@ import {
 import { ChatState } from "../Context/ChatProvider";
 import { useRef } from 'react';
 
-const ScrollableChat = ({ messages , onMessageClick}) => {
+const ScrollableChat = ({ messages ,  scrollToMessageId}) => {
   const { user } = ChatState();
   const messagesContainerRef = useRef();
   const formatCreatedAt = (createdAt) => {
@@ -30,28 +31,36 @@ const ScrollableChat = ({ messages , onMessageClick}) => {
     ));
   };
 
-  // useEffect(() => {
-  //   scrollToBottom();
-  // }, [messages]);
+  useEffect(() => {
+    if (messages && scrollToMessageId) {
+      // console.log("use effect ",messagesContainerRef.current);
+      scrollToMessage(scrollToMessageId);
+    }
+  }, [messages, scrollToMessageId]);
 
-  // const scrollToBottom = () => {
-  //   messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-  // };
+  const scrollToMessage = (messageId) => {
+    const messageIndex = messages.findIndex((message) => message._id === messageId);
+    if (messageIndex !== -1) {
+      console.log("messagesContainerRef", messagesContainerRef.current.props.children[messageIndex]);
+      const messageElement = messagesContainerRef.current.props.children[messageIndex];
+      console.log("messagesContainerRef view", messageElement);
 
-  // const scrollToMessage = (messageIndex) => {
-  //   if (messageIndex >= 0 && messageIndex < messages.length) {
-  //     const messageElement = messagesContainerRef.current.childNodes[messageIndex];
-  //     if (messageElement) {
-  //       messageElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  //     }
-  //   }
-  // };
+      if (messageElement) {
+        messageElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
 
   return (
     <ScrollableFeed ref={messagesContainerRef}>
       {messages &&
         messages.map((m, i) => (
-          <div style={{ display: "flex" }} key={m._id} onDoubleClick={handleDoubleTap}>
+          <div
+            style={{ display: 'flex' }}
+            key={m._id}
+            ref={i === messages.length - 1 ? messagesContainerRef : null}
+            onDoubleClick={handleDoubleTap}            
+          >
             {(isSameSender(messages, m, i, user._id) ||
               isLastMessage(messages, i, user._id)) && (
                 <Tooltip label={m.sender.name} placement="bottom-start" hasArrow>
@@ -66,6 +75,7 @@ const ScrollableChat = ({ messages , onMessageClick}) => {
                 </Tooltip>
               )}
             <span
+              ref={i === messages.length - 1 ? messagesContainerRef : null} // Add ref here
               style={{
                 border: replyMode && '2px solid #FFB6C1',
                 backgroundColor: `${m.sender._id === user._id ? "#BEE3F8" : "#B9F5D0" 
