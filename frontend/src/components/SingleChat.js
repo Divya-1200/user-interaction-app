@@ -13,9 +13,16 @@ import Lottie from "react-lottie";
 import animationData from "../animations/typing.json";
 import TagListItem from "./userAvatar/TagListItem";
 import UserListItem from "./userAvatar/UserListItem";
+import MessageListItem from "./userAvatar/MessageListItem";
 import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { ChatState } from "../Context/ChatProvider";
+import { Tooltip,  List, ListItem } from "@chakra-ui/react";
+// import { Tooltip } from "@chakra-ui/tooltip";
+import { Button } from "@chakra-ui/button";
+import { useDisclosure } from "@chakra-ui/hooks";
+
+
 const ENDPOINT = "http://localhost:3388";
 var socket, selectedChatCompare;
 
@@ -28,14 +35,17 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [typing, setTyping] = useState(false);
   const [istyping, setIsTyping] = useState(false);
   const toast = useToast();
+  const [search, setSearch] = useState("");
   // const [tags, setTags] = useState([]);
   const [tagSearch, setTagSearch] = useState(false);
   const [tagSearchKey, setTagSearchKey] = useState('');
   const [searchTagResult, setSearchTagResult] = useState([]);
   const [messageTags, setMessageTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  // const [searchTagResultQuery, setSearchTagResultQuery] = useState('');
-  // const [searchUserResultQuery, setSearchUserResultQuery] = useState('');
+  const [showSearchBox, setShowSearchBox] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  // const [searchQuery, setSearchQuery] = useState('');
+  // const [searchResults, setSearchResults] = useState([]);
 
   const defaultOptions = {
     loop: true,
@@ -93,6 +103,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         setNewMessage("");
         setMessageTags(async (prevMessageTags) => {
           const updatedTags = [...prevMessageTags];
+          console.log("updatedTags ", updatedTags);
           const { data } = await axios.post(
             "http://localhost:3388/api/message",
             {
@@ -210,19 +221,41 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       setMessageTags((prevMessageTags) => [...prevMessageTags, tagSearchKey]);  
       setTagSearch(false);
       setSearchTagResult([]);
-  
     }
+
     if (e.key === "Backspace") {
-      // Check if the last character is a hashtag
       if (newMessage.endsWith("#")) {
-        // Remove the hashtag and update state accordingly
         setTagSearch(false);
         setSearchTagResult([]);
         setTagSearchKey('');
+        setMessageTags((prevMessageTags) => {
+          const updatedMessageTags = [...prevMessageTags];
+          updatedMessageTags.pop();
+          console.log("prevMessageTags", prevMessageTags);
+          return updatedMessageTags;
+
+        }); 
+       
       }
+      /** It must be like when backspace is pressed and the hashtag value is modified then the tag must be modified in this set need to work on this  */
+      // else {
+      //   // Check if the previous character is a hashtag
+      //   const lastHashIndex = newMessage.lastIndexOf('#');
+      //   const previousChar = newMessage.charAt(lastHashIndex - 1);
+        
+      //   if (previousChar === '#') {
+      //     // Remove the last message tag
+      //     setMessageTags((prevMessageTags) => {
+      //       const updatedMessageTags = [...prevMessageTags];
+      //       updatedMessageTags.pop(); // Remove the last element
+      //       console.log("prevMessageTags", prevMessageTags);
+      //       return updatedMessageTags;
+      //     });
+      //   }
+      // }      
     }
   }
-  
+
   const handleAddTag = (tag) => {
     const lastHashIndex = newMessage.lastIndexOf('#');
     if(!messageTags.includes(tag.tag)){
@@ -235,6 +268,42 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         prevMessage.substring(0, lastHashIndex) + `#${tag.tag}` + prevMessage.substring(lastHashIndex + tag.tag.length + 1)
     );  };
 
+  /**Search bar*/
+  const handleSearch = async () => {
+    // Perform the search based on the 'search' query
+    try {
+      const filteredMessages = messages.filter((message) =>
+      message.content.toLowerCase().includes(search.toLowerCase())
+    );
+      console.log("filtered messages ",filteredMessages);
+      setSearchResults(filteredMessages);
+      // setSearchResults(response.data);
+    } catch (error) {
+      console.error("Error searching messages:", error);
+    }
+  };
+
+  useEffect(() => {
+    handleSearch(); // Initial search when component mounts
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleChange = (e) => {
+    setSearch(e.target.value);
+    console.log("handleChange",e.target.value);
+    if(e.target.value == ''){
+      setSearchResults([]);
+    }
+    else{
+      handleSearch(); 
+    }  
+  };
+
+  const handleSearchResults = (clickedIndex) => {
+    console.log(clickedIndex);
+    setSearchResults([]);
+
+  };
   return (
     <>
       {selectedChat ? (
@@ -265,6 +334,19 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               ) : (
                 <>
                   {selectedChat.chatName.toUpperCase()}
+                  <Tooltip label="Search" hasArrow placement="bottom-end">
+                  <Box d="flex" pb={2}>
+                    <Input
+                        placeholder="Search"
+                        mr={2}   
+                        value={search} 
+                        onChange={handleChange}
+                    />
+                    
+                  </Box>
+                  
+                  </Tooltip>
+                  
                   <UpdateGroupChatModal
                     fetchMessages={fetchMessages}
                     fetchAgain={fetchAgain}
@@ -273,7 +355,19 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 </>
               ))}
           </Text>
-     
+          {Array.isArray(searchResults) ? (
+                searchResults
+                  .slice(0, 4)
+                  .map((message) => (
+                    <MessageListItem
+                      key={message._id}
+                      message={message.content}
+                      handleFunction={() => handleSearchResults(message._id)}
+                    />
+                  ))
+              ) : (
+                <div>No message found</div>
+              )}
           <Box
             d="flex"
             flexDir="column"
@@ -295,7 +389,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               />
             ) : (
               <div className="messages">
-                <ScrollableChat messages={messages} />
+                <ScrollableChat messages={messages}/>
               </div>
             )}
 

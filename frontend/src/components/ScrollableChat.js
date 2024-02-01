@@ -1,7 +1,7 @@
 import { Avatar } from "@chakra-ui/avatar";
 import { Tooltip } from "@chakra-ui/tooltip";
 import ScrollableFeed from "react-scrollable-feed";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   isLastMessage,
   isSameSender,
@@ -9,10 +9,11 @@ import {
   isSameUser,
 } from "../config/ChatLogics";
 import { ChatState } from "../Context/ChatProvider";
+import { useRef } from 'react';
 
-
-const ScrollableChat = ({ messages }) => {
+const ScrollableChat = ({ messages , onMessageClick}) => {
   const { user } = ChatState();
+  const messagesContainerRef = useRef();
   const formatCreatedAt = (createdAt) => {
     const date = new Date(createdAt);
     return date.toLocaleTimeString().substring(0,5);
@@ -29,8 +30,25 @@ const ScrollableChat = ({ messages }) => {
     ));
   };
 
+  // useEffect(() => {
+  //   scrollToBottom();
+  // }, [messages]);
+
+  // const scrollToBottom = () => {
+  //   messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+  // };
+
+  // const scrollToMessage = (messageIndex) => {
+  //   if (messageIndex >= 0 && messageIndex < messages.length) {
+  //     const messageElement = messagesContainerRef.current.childNodes[messageIndex];
+  //     if (messageElement) {
+  //       messageElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  //     }
+  //   }
+  // };
+
   return (
-    <ScrollableFeed>
+    <ScrollableFeed ref={messagesContainerRef}>
       {messages &&
         messages.map((m, i) => (
           <div style={{ display: "flex" }} key={m._id} onDoubleClick={handleDoubleTap}>
