@@ -100,7 +100,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         setNewMessage("");
         setMessageTags(async (prevMessageTags) => {
           const updatedTags = [...prevMessageTags];
-          console.log("updatedTags ", updatedTags);
           const { data } = await axios.post(
             "http://localhost:3388/api/message",
             {
@@ -188,7 +187,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           config
         );
         setSearchTagResult(data);
-        console.log(data);
       } catch (error) {
         console.error("Error fetching tags:", error);
       }
@@ -228,7 +226,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         setMessageTags((prevMessageTags) => {
           const updatedMessageTags = [...prevMessageTags];
           updatedMessageTags.pop();
-          console.log("prevMessageTags", prevMessageTags);
           return updatedMessageTags;
 
         }); 
@@ -272,7 +269,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       const filteredMessages = messages.filter((message) =>
       message.content.toLowerCase().includes(search.toLowerCase())
     );
-      console.log("filtered messages ",filteredMessages);
       setSearchResults(filteredMessages);
       // setSearchResults(response.data);
     } catch (error) {
@@ -287,7 +283,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const handleChange = (e) => {
     setSearch(e.target.value);
-    console.log("handleChange",e.target.value);
     if(e.target.value === ''){
       setSearchResults([]);
     }
@@ -297,7 +292,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   const handleSearchResults = (clickedIndex) => {
-    console.log(clickedIndex);
     setScrollToMessageId(clickedIndex);
     setSearchResults([]);
 

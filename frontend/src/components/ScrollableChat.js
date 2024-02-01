@@ -35,14 +35,12 @@ const ScrollableChat = ({ messages ,  scrollToMessageId}) => {
 
   useEffect(() => {
     if (messages && scrollToMessageId) {
-      // console.log("use effect ",messagesContainerRef.current);
       scrollToMessage(scrollToMessageId);
     }
   }, [messages, scrollToMessageId]);
 
   const scrollToMessage = (messageId) => {
     const messageIndex = messages.findIndex((message) => message._id === messageId);
-    console.log("scrollToMessage ", messageRefs);
     if (messageIndex !== -1 && messageRefs.current[messageIndex].current) {
       messageRefs.current[messageIndex].current.scrollIntoView({
         behavior: 'smooth',
