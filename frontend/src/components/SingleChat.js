@@ -43,6 +43,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [scrollToMessageId, setScrollToMessageId] = useState(null);
   const [priorityMessage, setPriorityMessage] = useState(false);
+  const [replyingTo, setReplyingTo] = useState(null);
 
   const defaultOptions = {
     loop: true,
@@ -108,6 +109,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               chatId  : selectedChat,
               priority : priorityMessage,
               users : selectedChat.users,
+              replyingTo : replyingTo._id,
             },
             config
           );
@@ -117,7 +119,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           setPriorityMessage(false);
         });
         // setMessageTags([]);
-       
+        if (replyingTo) {
+          console.log('Replying to:', replyingTo);
+          console.log('Typed message:', newMessage);
+          setReplyingTo(null);
+        }
       } catch (error) {
         toast({
           title: "Error Occured!",
@@ -307,6 +313,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     setSearchResults([]);
 
   };
+  const handleDoubleTap = (message) => {
+    console.log('handleDoubleTap',message);
+    if (replyingTo && replyingTo._id === message._id) {
+      setReplyingTo(null);
+    } else {
+      setReplyingTo(message);
+    }
+  };
   return (
     <>
       {selectedChat ? (
@@ -392,7 +406,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               />
             ) : (
               <div className="messages">
-                <ScrollableChat messages={messages} scrollToMessageId={scrollToMessageId} />
+                <ScrollableChat messages={messages} scrollToMessageId={scrollToMessageId} onMessageDoubleTap={handleDoubleTap}
+/>
               </div>
             )}
 
@@ -432,6 +447,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 <div>No tags found</div>
               )
             )}
+
+            {replyingTo && (
+                <div style={{ marginBottom: '10px' }}>
+                <strong>Replying to:</strong> {replyingTo.content}
+                </div>
+            )}
+
               <Input
                 variant="filled"
                 bg="#E0E0E0"

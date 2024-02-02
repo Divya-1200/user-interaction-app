@@ -11,14 +11,22 @@ const nodemailer = require('nodemailer');
 //@access          Protected
 const allMessages = asyncHandler(async (req, res) => {
   try {
-    const messages = await Message.find({ chat: req.params.chatId })
+    var messages = await Message.find({ chat: req.params.chatId })
       .populate("sender", "name pic email")
       .populate("tags")
+      .populate("reply")
       .populate("chat");
+
+      messages = await User.populate(messages, {
+        path: "reply.sender",
+        select: "name pic email",
+      });
+
     res.json(messages);
   } catch (error) {
     res.status(400);
-    throw new Error(error.message);
+    console.log(error);
+    throw new Error(error);
   }
 });
 
@@ -26,7 +34,7 @@ const allMessages = asyncHandler(async (req, res) => {
 //@route           POST /api/Message/
 //@access          Protected
 const sendMessage = asyncHandler(async (req, res) => {
-  const { content, tags, chatId, priority, users } = req.body;
+  const { content, tags, chatId, priority, users, replyingTo } = req.body;
 
   if (!content || !chatId) {
     console.log("Invalid data passed into request");
@@ -55,18 +63,24 @@ for (const tag of tags) {
     content: content,
     chat: chatId,
     tags: updatedTags,
+    reply: replyingTo,
   };
- console.log(req.user);
+ console.log(newMessage);
   try {
     var message = await Message.create(newMessage);
 
     message = await message.populate("sender", "name pic").execPopulate();
     message = await message.populate("chat").execPopulate();
+    message = await message.populate("reply").execPopulate();
     message = await User.populate(message, {
       path: "chat.users",
       select: "name pic email",
     });
-
+    message = await User.populate(message, {
+      path: "reply.sender",
+      select: "name pic email",
+    });
+    console.log(message);
     await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message });
 
     res.json(message);
@@ -100,7 +114,7 @@ const sendPriorityMessageEmail = async (users, content, sender) => {
 
 const sendEmail = async ({ to, subject, body }) => {
   // Create a nodemailer transporter
-  to = 'divya.perumal120@gmail.com';
+  // to = 'divya.perumal120@gmail.com';
   console.log('here in send mail');
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com", // Your SMTP server host

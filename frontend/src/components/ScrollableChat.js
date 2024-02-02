@@ -12,7 +12,7 @@ import {
 import { ChatState } from "../Context/ChatProvider";
 import { useRef } from 'react';
 
-const ScrollableChat = ({ messages ,  scrollToMessageId}) => {
+const ScrollableChat = ({ messages ,  scrollToMessageId, onMessageDoubleTap}) => {
   const { user } = ChatState();
   const messagesContainerRef = useRef();
   const messageRefs = useRef(messages.map(() => React.createRef()));
@@ -21,10 +21,7 @@ const ScrollableChat = ({ messages ,  scrollToMessageId}) => {
     const date = new Date(createdAt);
     return date.toLocaleTimeString().substring(0,5);
   };
-  const [replyMode, setReplyMode] = useState(false);
-  const handleDoubleTap = () => {
-    setReplyMode(!replyMode);
-  };
+  console.log(messages);
   const renderTags = (tags) => {
     return tags.map((tag) => (
       <span key={tag._id} style={{ color: "blue", fontWeight: "bold" }}>
@@ -32,6 +29,7 @@ const ScrollableChat = ({ messages ,  scrollToMessageId}) => {
       </span>
     ));
   };
+
 
   useEffect(() => {
     if (messages && scrollToMessageId) {
@@ -51,57 +49,80 @@ const ScrollableChat = ({ messages ,  scrollToMessageId}) => {
 
   return (
     <ScrollableFeed ref={messagesContainerRef}>
-      {messages &&
-        messages.map((m, i) => (
-          <div
-            style={{ display: 'flex' }}
-            key={m._id}
-            ref={messageRefs.current[i]} 
-            onDoubleClick={handleDoubleTap}            
-          >
-            {(isSameSender(messages, m, i, user._id) ||
-              isLastMessage(messages, i, user._id)) && (
-                <Tooltip label={m.sender.name} placement="bottom-start" hasArrow>
-                  <Avatar
-                    mt="7px"
-                    mr={1}
-                    size="sm"
-                    cursor="pointer"
-                    name={m.sender.name}
-                    src={m.sender.pic}
-                  />
-                </Tooltip>
-              )}
-            <span
-              ref={i === messages.length - 1 ? messagesContainerRef : null} // Add ref here
+    {messages &&
+      messages.map((m, i) => (
+        <div style={{ display: 'flex' , flexDirection: 'column' , alignItems: isSameUser(messages, m, i, user._id) ? 'flex-start' : 'flex-end'}} key={m._id}>
+          {m.reply && (
+            <div
+              ref={messageRefs.current[i]} 
               style={{
-                border: replyMode && '2px solid #FFB6C1',
-                backgroundColor: `${m.sender._id === user._id ? "#BEE3F8" : "#B9F5D0" 
-                  }` ,
+                backgroundColor: "#d4edda",
                 marginLeft: isSameSenderMargin(messages, m, i, user._id),
                 marginTop: isSameUser(messages, m, i, user._id) ? 3 : 10,
                 borderRadius: "20px",
                 padding: "5px 15px",
                 maxWidth: "75%",
               }}
+              onDoubleClick={() => onMessageDoubleTap(m)}
             >
               <div style={{ marginBottom: "5px" }}>
-              {m.sender._id === user._id ? (
-               <strong>You</strong>
-              ) : (
-                <strong>{m.sender.name}</strong>
+                <strong>{m.sender._id === user._id ? "You" : m.sender.name} Replied to </strong>
+                {m.reply.sender._id === user._id ? (
+                  <strong>You</strong>
+                ) : (
+                  <strong>{m.reply.sender.name}</strong>
+                )}
+              </div>
+              <div>{m.reply.content}</div>
+              
+            </div>
+          )}
+          {(isSameSender(messages, m, i, user._id) ||
+            isLastMessage(messages, i, user._id)) && (
+            <Tooltip label={m.sender.name} placement="bottom-start" hasArrow>
+              <Avatar
+                mt="7px"
+                mr={1}
+                size="sm"
+                cursor="pointer"
+                name={m.sender.name}
+                src={m.sender.pic}
+              />
+            </Tooltip>
+          )}
+          <span
+            ref={i === messages.length - 1 ? messagesContainerRef : null}
+            style={{
+              backgroundColor: `${m.sender._id === user._id ? "#BEE3F8" : "#B9F5D0"}`,
+              marginLeft: isSameSenderMargin(messages, m, i, user._id),
+              marginTop: m.reply && m.reply._id ? 0 : (isSameUser(messages, m, i, user._id) ? 3 : 10),
+              borderRadius: "20px",
+              padding: "5px 15px",
+              maxWidth: "75%",
+            }}
+          >
+            <div style={{ marginBottom: "5px" }}>
+              {m.reply && m.reply._id ? null : (
+                <strong>
+                  {m.sender._id === user._id ? "You" : m.sender.name}
+                </strong>
               )}
+            </div>
+            <div>{m.content}</div>
+            {m.tags && m.tags.length > 0 && (
+              <div>
+                <hr style={{ margin: "5px 0" }}></hr>
+                <div>{renderTags(m.tags)}</div>
               </div>
-              <div>{m.content}</div>
-              <hr style={{ margin: "5px 0" }}></hr>
-              <div>{renderTags(m.tags)}</div>
-              <div style={{ fontSize: "0.6em", color: "#888" }}>
-               {formatCreatedAt(m.createdAt)}
-              </div>
-            </span>
-          </div>
-        ))}
-    </ScrollableFeed>
+            )}
+            <div style={{ fontSize: "0.6em", color: "#888" }}>
+              {formatCreatedAt(m.createdAt)}
+            </div>
+           
+          </span>
+        </div>
+      ))}
+  </ScrollableFeed>
   );
 };
 
