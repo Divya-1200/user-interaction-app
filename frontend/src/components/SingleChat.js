@@ -314,7 +314,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   };
   const handleDoubleTap = (message) => {
-    console.log('handleDoubleTap',message);
+    // console.log('handleDoubleTap',message);
     if (replyingTo && replyingTo._id === message._id) {
       setReplyingTo(null);
     } else {
@@ -406,8 +406,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               />
             ) : (
               <div className="messages">
-                <ScrollableChat messages={messages} scrollToMessageId={scrollToMessageId} onMessageDoubleTap={handleDoubleTap}
-/>
+                <ScrollableChat messages={messages} scrollToMessageId={scrollToMessageId} onMessageDoubleTap={handleDoubleTap}/>
               </div>
             )}
 
