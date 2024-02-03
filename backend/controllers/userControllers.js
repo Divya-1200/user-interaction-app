@@ -15,6 +15,7 @@ const allUsers = asyncHandler(async (req, res) => {
       }
     : {};
   const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
+
   res.send(users);
 });
 
@@ -36,6 +37,8 @@ const registerUser = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("User already exists");
   }
+
+  // email verification required
 
   const user = await User.create({
     name,
@@ -64,11 +67,9 @@ const registerUser = asyncHandler(async (req, res) => {
 //@access          Public
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-
+  console.log("here");
   const user = await User.findOne({ email });
-  console.log(user);
   if (user && (await user.matchPassword(password))) {
-    console.log("Invalid here");
     res.json({
       _id: user._id,
       name: user.name,
@@ -77,7 +78,6 @@ const authUser = asyncHandler(async (req, res) => {
       pic: user.pic,
       token: generateToken(user._id),
     });
-    console.log(res);
   } else {
     
     res.status(401);

@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const Chat = require("../models/chatModel");
 const User = require("../models/userModel");
 const Tag  = require("../models/tagModel"); 
+const nodemailer = require('nodemailer');
 //@description     Create or fetch One to One Chat
 //@route           POST /api/chat/
 //@access          Protected
@@ -12,17 +13,22 @@ const accessChat = asyncHandler(async (req, res) => {
     console.log("UserId param not sent with request");
     return res.sendStatus(400);
   }
-
-  var isChat = await Chat.find({
+  const isChat = await Chat.find({
     isGroupChat: false,
     $and: [
-      { users: { $elemMatch: { $eq: req.user._id } } },
-      { users: { $elemMatch: { $eq: userId } } },
+      { 'users.user': { $eq: req.user._id } },
+      { 'users.user': { $eq: userId } },
     ],
+  }) .populate({
+    path: "users.user",
+    select: "name pic email",
   })
-    .populate("users", "-password")
     .populate("latestMessage");
 
+  isChat = await User.populate(isChat, {
+      path: "users.user",
+      select: "name pic email",
+  });
   isChat = await User.populate(isChat, {
     path: "latestMessage.sender",
     select: "name pic email",
@@ -56,13 +62,20 @@ const accessChat = asyncHandler(async (req, res) => {
 //@access          Protected
 const fetchChats = asyncHandler(async (req, res) => {
   try {
-    Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
-      .populate("users", "-password")
+    Chat.find({"users.user": req.user._id  })
+    .populate({
+      path: "users.user",
+      select: "name pic email",
+    })
       .populate("groupAdmin", "-password")
       .populate("tags","-password")
       .populate("latestMessage")
       .sort({ updatedAt: -1 })
       .then(async (results) => {
+        results = await User.populate(results, {
+          path: "users.user",
+          select: "name pic email",
+        });
         results = await User.populate(results, {
           path: "latestMessage.sender",
           select: "name pic email",
@@ -96,20 +109,99 @@ const createGroupChat = asyncHandler(async (req, res) => {
     
     const groupChat = await Chat.create({
       chatName: req.body.name,
-      users: users,
+      users: users.map(user => ({
+        user,
+        status: user === req.user ? "accepted" : "pending"
+      })),
       isGroupChat: true,
       groupAdmin: req.user,
       groupDescription: req.body.description,
       tags: tags,
 
     });
+
+    const invitePromises = users.map(async (user) => {
+      if (user !== req.user) {
+        await sendInvitationEmail(user, groupChat);
+      }
+    });
+    await Promise.all(invitePromises);
+
     const fullGroupChat = await Chat.findOne({ _id: groupChat._id })
-      .populate("users", "-password")
+      .populate("users.user", "-password")
       .populate("groupAdmin", "-password");
     res.status(200).json(fullGroupChat);
   } catch (error) {
     res.status(400);
     throw new Error(error.message);
+  }
+});
+const sendInvitationEmail = async (user, groupChat) => {
+  console.log("Invitation", user);
+  const invitationLink = `https://localhost:3388/accept-invitation/${groupChat._id}?userId=${user._id}`;
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: `You're Invited to Join ${groupChat.chatName}`,
+      body: `Hello,
+     You have been invited to join the group chat "${groupChat.chatName}" by !
+     Click the following link to accept the invitation: ${invitationLink}
+     Thank you!`,
+    })
+    .then(() => console.log('Email sent successfully'))
+    .catch((error) => console.error('Failed to send email:', error.message));
+  } catch (error) {
+    console.error('Error sending priority message email: ', error.message);
+    // Handle the error accordingly
+  }
+};
+
+const sendEmail = async ({ to, subject, body }) => {
+  // to = 'divya.perumal120@gmail.com';
+  console.log('here in send mail');
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com", 
+    port: 587, 
+    secure: false, 
+    auth: {
+      user: 'd123j45mail@gmail.com', 
+      pass: 'redgnncenmzdgqre',
+    },
+  });
+
+  // Setup email data
+  const mailOptions = {
+    from: 'd123j45mail@gmail.com', 
+    to, 
+    subject,
+    text: body, 
+  };
+console.log(mailOptions);
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('here in send mail 123');
+    console.log('Email sent: ', info.response);
+  } catch (error) {
+    console.error('Error sending email: ', error);
+    throw new Error('Error sending email');
+  }
+};
+
+// @route /api/chat/accept-invitation/:chatId
+const acceptInvitation = asyncHandler (async (req, res) => {
+  const { chatId } = req.params.chatId;
+  const { userId } = req.body;
+  console.log("I am here ");
+  try {
+    const chat = await Chat.findByIdAndUpdate(
+      chatId,
+      { $set: { 'users.$[elem].status': 'accepted' } },
+      { arrayFilters: [{ 'elem.user': userId }] }
+    );
+    // Handle other tasks related to accepting the invitation
+    res.status(200).json({ message: 'Invitation accepted successfully.' });
+  } catch (error) {
+    res.status(400).json({ message: 'Failed to accept invitation.' });
   }
 });
 
@@ -129,7 +221,7 @@ const updateDescription = asyncHandler(async (req, res) => {
       new : true,
     }
   )
-  .populate("users", "-password")
+  .populate("users.user", "-password")
   .populate("groupAdmin", "-password");
 
   if (!updatedDescription) {
@@ -155,7 +247,10 @@ const renameGroup = asyncHandler(async (req, res) => {
       new: true,
     }
   )
-    .populate("users", "-password")
+  .populate({
+    path: "users.user",
+    select: "name pic email",
+  })
     .populate("groupAdmin", "-password");
 
   if (!updatedChat) {
@@ -177,13 +272,16 @@ const removeFromGroup = asyncHandler(async (req, res) => {
   const removed = await Chat.findByIdAndUpdate(
     chatId,
     {
-      $pull: { users: userId },
+      $pull: { users: { user: userId } },
     },
     {
       new: true,
     }
   )
-    .populate("users", "-password")
+  .populate({
+    path: "users.user",
+    select: "name pic email",
+  })
     .populate("tags","-password")
     .populate("groupAdmin", "-password");
 
@@ -208,7 +306,7 @@ const removeFromTag = asyncHandler(async(req, res) => {
       new: true,
     }
     )
-    .populate("users", "-password")
+    .populate("users.user", "-password")
     .populate("tags","-password")
     .populate("groupAdmin", "-password");
 
@@ -225,28 +323,46 @@ const removeFromTag = asyncHandler(async(req, res) => {
 // @route   PUT /api/chat/groupadd
 // @access  Protected
 const addToGroup = asyncHandler(async (req, res) => {
-  const { chatId, userId } = req.body;
-
+  const { chat, user } = req.body;
+  console.log("user: add ", user);
   // check if the requester is admin
-
-  const added = await Chat.findByIdAndUpdate(
-    chatId,
-    {
-      $push: { users: userId },
-    },
-    {
-      new: true,
-    }
-  )
-    .populate("users", "-password")
+  try{
+    const added = await Chat.findByIdAndUpdate(
+      chat._id,
+      {
+        $push: { users: { user: user._id } },
+      },
+      {
+        new: true,
+      }
+    )
+    .populate({
+      path: "users.user",
+      select: "name pic email",
+    })
     .populate("groupAdmin", "-password");
-
-  if (!added) {
-    res.status(404);
-    throw new Error("Chat Not Found");
-  } else {
-    res.json(added);
+    
+    console.log("cominghere ");
+  
+    sendInvitationEmail(user, chat);
+    if (!added) {
+      res.status(404);
+      throw new Error("Chat Not Found");
+    } else {
+      res.json(added);
+    }
   }
+  catch(error){
+    console.log("error", error);
+    throw new Error(error);
+  }
+  
+  // if (user._id !== req.user._id) {
+  //   console.log("cominghere 123");
+   
+  // }
+
+
 });
 
 // @desc  addFromTag
@@ -254,24 +370,21 @@ const addToGroup = asyncHandler(async (req, res) => {
 // @access  Protected
 const addFromTag  = asyncHandler(async (req, res) => {
   const { chatId, tag } = req.body;
-  console.log(tag);
+  // console.log(tag);
   var tagId;
   if(tag._id){
     tagId = tag._id;
-    console.log("new tag id"+tagId);
   }
   else{
     const tagFind = await Tag.findOne({tag:tag}); // Chance of inserting duplicate tag
     if(tagFind){
       tagId = tagFind._id;
-      console.log("find tag id"+tagId);
     }
     else{
       const newTag = await Tag.create({
        tag,
       });
       tagId = newTag._id;
-      console.log("new added tag id"+tagId);
     }
   }
   const added = await Chat.findByIdAndUpdate(
@@ -305,4 +418,5 @@ module.exports = {
   updateDescription,
   removeFromTag,
   addFromTag,
+  acceptInvitation,
 };

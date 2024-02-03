@@ -48,6 +48,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       ? selectedChat.groupDescription
       : "Add your group description here"
   );
+  console.log("all the users ",selectedChat.users);
   const handleEdit = () => {
     setEditing(!editing);
   };
@@ -95,7 +96,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
         },
       };
       const { data } = await axios.get(`http://localhost:3388/api/user?search=${search}`, config);
-      console.log(data);
+      console.log("users ",data);
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
@@ -218,8 +219,8 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       const { data } = await axios.put(
         `http://localhost:3388/api/chat/groupadd`,
         {
-          chatId: selectedChat._id,
-          userId: user1._id,
+          chat: selectedChat,
+          user: user1,
         },
         config
       );
@@ -417,10 +418,10 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
             <Box w="100%" d="flex" flexWrap="wrap" pb={3}>
               {selectedChat.users.map((u) => (
                 <UserBadgeItem
-                  key={u._id}
+                  key={u.user._id}
                   user={u}
                   admin={selectedChat.groupAdmin}
-                  handleFunction={() => handleRemove(u)}
+                  handleFunction={() => handleRemove(u.user)}
                 />
               ))}
             </Box>
@@ -470,8 +471,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                     tag={tag}
                     handleFunction={() => handleAddTag(tag)}
                   />
-                ))
-                
+                ))    
             )}
           </ModalBody>
           <ModalFooter style={{ display: 'flex', justifyContent: 'space-between' }}>

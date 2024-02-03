@@ -159,6 +159,7 @@ const GroupChatModal = ({ children }) => {
       // console.log(data);
       setChats([data, ...chats]);
       onClose();
+      console.log("user identification",data);
       toast({
         title: "New Group Chat Created!",
         status: "success",
