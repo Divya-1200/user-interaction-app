@@ -48,7 +48,6 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       ? selectedChat.groupDescription
       : "Add your group description here"
   );
-  // console.log("all the users ",selectedChat.users);
   const handleEdit = () => {
     setEditing(!editing);
   };
@@ -96,7 +95,6 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
         },
       };
       const { data } = await axios.get(`http://localhost:3388/api/user?search=${search}`, config);
-      // console.log("users ",data);
       setLoading(false);
       setSearchResult(data);
     } catch (error) {

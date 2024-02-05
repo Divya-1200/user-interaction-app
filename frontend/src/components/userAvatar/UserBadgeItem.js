@@ -2,7 +2,6 @@ import { CloseIcon } from "@chakra-ui/icons";
 import { Badge } from "@chakra-ui/layout";
 
 const UserBadgeItem = ({ user, handleFunction, admin }) => {
-  // console.log("User badge",user);
   return (
     <Badge
       px={2}

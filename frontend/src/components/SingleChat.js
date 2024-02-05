@@ -99,7 +99,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           },
         };
         setNewMessage("");
-        console.log("selected users ",selectedChat.users);
         setMessageTags(async (prevMessageTags) => {
           const updatedTags = [...prevMessageTags];
           const { data } = await axios.post(
@@ -121,8 +120,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         });
         // setMessageTags([]);
         if (replyingTo) {
-          console.log('Replying to:', replyingTo);
-          console.log('Typed message:', newMessage);
           setReplyingTo(null);
         }
       } catch (error) {
@@ -225,7 +222,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const handleKeyDown =  async (e) => {
     if (e.key === " " && tagSearch) {
-      // console.log("tagSearchKey", tagSearchKey);
       setMessageTags((prevMessageTags) => [...prevMessageTags, tagSearchKey]);  
       setTagSearch(false);
       setSearchTagResult([]);
@@ -316,7 +312,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   };
   const handleDoubleTap = (message) => {
-    // console.log('handleDoubleTap',message);
     if (replyingTo && replyingTo._id === message._id) {
       setReplyingTo(null);
     } else {

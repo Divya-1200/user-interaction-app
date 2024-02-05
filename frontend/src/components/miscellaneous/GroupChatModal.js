@@ -83,7 +83,6 @@ const GroupChatModal = ({ children }) => {
         },
       };
       const { data } = await axios.get(`http://localhost:3388/api/tag?search=${tagSearch}`, config);
-      // console.log(data);
       setLoading(false);
       setSearchTagResult(data);
     } catch (error) {
@@ -156,10 +155,8 @@ const GroupChatModal = ({ children }) => {
         },
         config
       );
-      // console.log(data);
       setChats([data, ...chats]);
       onClose();
-      console.log("user identification",data);
       toast({
         title: "New Group Chat Created!",
         status: "success",
@@ -168,7 +165,6 @@ const GroupChatModal = ({ children }) => {
         position: "top",
       });
     } catch (error) {
-      // console.log(error);
       toast({
         title: "Failed to Create the Chat!",
         // description: error.response.data,

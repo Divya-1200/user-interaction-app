@@ -94,7 +94,6 @@ function SideDrawer() {
   };
 
   const accessChat = async (userId) => {
-    console.log(userId);
 
     try {
       setLoadingChat(true);
@@ -105,7 +104,6 @@ function SideDrawer() {
         },
       };
       const { data } = await axios.post(`http://localhost:3388/api/chat`, { userId }, config);
-      console.log("sidedrawer ",data);
       if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
       setSelectedChat(data);
       setLoadingChat(false);

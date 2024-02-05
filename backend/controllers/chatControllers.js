@@ -157,8 +157,6 @@ const sendInvitationEmail = async (user, groupChat) => {
 };
 
 const sendEmail = async ({ to, subject, body }) => {
-  // to = 'divya.perumal120@gmail.com';
-  console.log('here in send mail');
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com", 
     port: 587, 
@@ -176,7 +174,6 @@ const sendEmail = async ({ to, subject, body }) => {
     subject,
     text: body, 
   };
-console.log(mailOptions);
   try {
     const info = await transporter.sendMail(mailOptions);
     console.log('here in send mail 123');
@@ -191,10 +188,7 @@ console.log(mailOptions);
 // @route  /api/chat/accept
 // @access  Protected
 const acceptInvitation = asyncHandler (async (req, res) => {
-  // const { chatId } = req.params;
-  // console.log(req);
   const {userId, chatId } = req.query;
-  // console.log("I am here ");
   try {
     const chat = await Chat.findByIdAndUpdate(
       chatId,
@@ -297,7 +291,6 @@ const removeFromGroup = asyncHandler(async (req, res) => {
 });
 
 const removeFromTag = asyncHandler(async(req, res) => {
-  console.log("here we are");
   const {chatId, tagId} = req.body;
   const removedTag = await Chat.findByIdAndUpdate(
     chatId,
@@ -326,7 +319,6 @@ const removeFromTag = asyncHandler(async(req, res) => {
 // @access  Protected
 const addToGroup = asyncHandler(async (req, res) => {
   const { chat, user } = req.body;
-  console.log("user: add ", user);
   // check if the requester is admin
   try{
     const added = await Chat.findByIdAndUpdate(
@@ -343,8 +335,6 @@ const addToGroup = asyncHandler(async (req, res) => {
       select: "name pic email",
     })
     .populate("groupAdmin", "-password");
-    
-    console.log("cominghere ");
   
     sendInvitationEmail(user, chat);
     if (!added) {
@@ -359,10 +349,6 @@ const addToGroup = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
   
-  // if (user._id !== req.user._id) {
-  //   console.log("cominghere 123");
-   
-  // }
 
 
 });
@@ -372,7 +358,6 @@ const addToGroup = asyncHandler(async (req, res) => {
 // @access  Protected
 const addFromTag  = asyncHandler(async (req, res) => {
   const { chatId, tag } = req.body;
-  // console.log(tag);
   var tagId;
   if(tag._id){
     tagId = tag._id;

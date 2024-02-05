@@ -23,7 +23,6 @@ const allUsers = asyncHandler(async (req, res) => {
 //@route           POST /api/user/
 //@access          Public
 const registerUser = asyncHandler(async (req, res) => {
-  console.log('registerUser');
   const { name, email, password, pic } = req.body;
 
   if (!name || !email || !password) {
@@ -67,7 +66,6 @@ const registerUser = asyncHandler(async (req, res) => {
 //@access          Public
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  console.log("here");
   const user = await User.findOne({ email });
   if (user && (await user.matchPassword(password))) {
     res.json({

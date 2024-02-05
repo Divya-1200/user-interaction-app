@@ -41,18 +41,15 @@ const sendMessage = asyncHandler(async (req, res) => {
     return res.sendStatus(400);
   }
   let updatedTags = [];
-console.log("tags: " + tags);
 for (const tag of tags) {
   if (!tag._id) {
     const tagFind = await Tag.findOne({ tag });
     
     if (tagFind) {
       updatedTags.push(tagFind);
-      console.log("Found tag ID: " + tagFind._id);
     } else {
       const newTag = await Tag.create({ tag });
       updatedTags.push(newTag);
-      console.log("Newly added tag ID: " + newTag._id);
     }
   } else {
     updatedTags.push(tag);
@@ -65,7 +62,7 @@ for (const tag of tags) {
     tags: updatedTags,
     reply: replyingTo,
   };
-//  console.log("users ",users);
+
   try {
     var message = await Message.create(newMessage);
 
@@ -80,7 +77,6 @@ for (const tag of tags) {
       path: "reply.sender",
       select: "name pic email",
     });
-    console.log(message);
     await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message });
 
     res.json(message);
@@ -96,9 +92,7 @@ for (const tag of tags) {
 });
 
 const sendPriorityMessageEmail = async (users, content, sender) => {
-  console.log(users);
   const userEmails = users.map((user) => {
-    console.log(`User: `, user.user.email);
     return user.user.email;
   });
   try {
@@ -115,31 +109,27 @@ const sendPriorityMessageEmail = async (users, content, sender) => {
 };
 
 const sendEmail = async ({ to, subject, body }) => {
-  // to = 'divya.perumal120@gmail.com';
-  console.log('here in send mail ', to);
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com", // Your SMTP server host
-    port: 587, // Your SMTP server port (this can vary, check with your email provider)
-    secure: false, // Use SSL/TLS if true, false for other ports
+    host: "smtp.gmail.com", 
+    port: 587, 
+    secure: false, 
     auth: {
-      user: 'd123j45mail@gmail.com', // Your email address
-      pass: 'redgnncenmzdgqre', // Your email password
+      user: 'd123j45mail@gmail.com',
+      pass: 'redgnncenmzdgqre', 
     },
   });
 
   // Setup email data
   const mailOptions = {
-    from: 'd123j45mail@gmail.com', // Sender address
-    to, // List of recipients
-    subject, // Subject line
-    text: body, // Plain text body
+    from: 'd123j45mail@gmail.com',
+    to, 
+    subject, 
+    text: body, 
   };
 
   try {
     // Send the email
     const info = await transporter.sendMail(mailOptions);
-    console.log('here in send mail 123');
-    console.log('Email sent: ', info.response);
   } catch (error) {
     console.error('Error sending email: ', error);
     throw new Error('Error sending email');
