@@ -25,5 +25,5 @@ router.route("/groupremove").put(protect, removeFromGroup);
 router.route("/tag/remove").put(protect, removeFromTag);
 router.route("/tag/add").put(protect, addFromTag);
 router.route("/groupadd").put(protect, addToGroup);
-router.route("/accept-invitation/:chatId").put(protect, acceptInvitation);
+router.route("/accept").get( acceptInvitation);
 module.exports = router;

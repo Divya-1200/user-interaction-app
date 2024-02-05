@@ -65,7 +65,7 @@ for (const tag of tags) {
     tags: updatedTags,
     reply: replyingTo,
   };
- console.log("users ",users);
+//  console.log("users ",users);
   try {
     var message = await Message.create(newMessage);
 

@@ -138,7 +138,7 @@ const createGroupChat = asyncHandler(async (req, res) => {
 });
 const sendInvitationEmail = async (user, groupChat) => {
   console.log("Invitation", user);
-  const invitationLink = `https://localhost:3388/accept-invitation/${groupChat._id}?userId=${user._id}`;
+  const invitationLink = `http://localhost:3388/api/chat/accept?userId=${user._id}&chatId=${groupChat._id}`;
   try {
     await sendEmail({
       to: user.email,
@@ -187,18 +187,20 @@ console.log(mailOptions);
   }
 };
 
-// @route /api/chat/accept-invitation/:chatId
+// @desc  addFromTag
+// @route  /api/chat/accept
+// @access  Protected
 const acceptInvitation = asyncHandler (async (req, res) => {
-  const { chatId } = req.params.chatId;
-  const { userId } = req.body;
-  console.log("I am here ");
+  // const { chatId } = req.params;
+  // console.log(req);
+  const {userId, chatId } = req.query;
+  // console.log("I am here ");
   try {
     const chat = await Chat.findByIdAndUpdate(
       chatId,
       { $set: { 'users.$[elem].status': 'accepted' } },
       { arrayFilters: [{ 'elem.user': userId }] }
     );
-    // Handle other tasks related to accepting the invitation
     res.status(200).json({ message: 'Invitation accepted successfully.' });
   } catch (error) {
     res.status(400).json({ message: 'Failed to accept invitation.' });
