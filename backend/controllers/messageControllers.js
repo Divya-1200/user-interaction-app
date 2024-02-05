@@ -65,7 +65,7 @@ for (const tag of tags) {
     tags: updatedTags,
     reply: replyingTo,
   };
- console.log(newMessage);
+ console.log("users ",users);
   try {
     var message = await Message.create(newMessage);
 
@@ -96,8 +96,11 @@ for (const tag of tags) {
 });
 
 const sendPriorityMessageEmail = async (users, content, sender) => {
-  const userEmails = users.map((user) => user.email);
-
+  console.log(users);
+  const userEmails = users.map((user) => {
+    console.log(`User: `, user.user.email);
+    return user.user.email;
+  });
   try {
     await sendEmail({
       to: userEmails,
@@ -108,14 +111,12 @@ const sendPriorityMessageEmail = async (users, content, sender) => {
     .catch((error) => console.error('Failed to send email:', error.message));
   } catch (error) {
     console.error('Error sending priority message email: ', error.message);
-    // Handle the error accordingly
   }
 };
 
 const sendEmail = async ({ to, subject, body }) => {
-  // Create a nodemailer transporter
   // to = 'divya.perumal120@gmail.com';
-  console.log('here in send mail');
+  console.log('here in send mail ', to);
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com", // Your SMTP server host
     port: 587, // Your SMTP server port (this can vary, check with your email provider)

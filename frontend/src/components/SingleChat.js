@@ -99,6 +99,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           },
         };
         setNewMessage("");
+        console.log("selected users ",selectedChat.users);
         setMessageTags(async (prevMessageTags) => {
           const updatedTags = [...prevMessageTags];
           const { data } = await axios.post(
@@ -109,7 +110,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               chatId  : selectedChat,
               priority : priorityMessage,
               users : selectedChat.users,
-              replyingTo : replyingTo._id,
+              replyingTo : replyingTo && replyingTo._id,
             },
             config
           );
@@ -224,6 +225,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const handleKeyDown =  async (e) => {
     if (e.key === " " && tagSearch) {
+      // console.log("tagSearchKey", tagSearchKey);
       setMessageTags((prevMessageTags) => [...prevMessageTags, tagSearchKey]);  
       setTagSearch(false);
       setSearchTagResult([]);

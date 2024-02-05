@@ -48,7 +48,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       ? selectedChat.groupDescription
       : "Add your group description here"
   );
-  console.log("all the users ",selectedChat.users);
+  // console.log("all the users ",selectedChat.users);
   const handleEdit = () => {
     setEditing(!editing);
   };
