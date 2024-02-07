@@ -41,6 +41,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [priorityMessage, setPriorityMessage] = useState(false);
   const [replyingTo, setReplyingTo] = useState(null);
 
+
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -312,6 +313,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     setSearchResults([]);
 
   };
+  const resetScrollToMessageId = () => {
+    setScrollToMessageId(null);
+  };
   const handleDoubleTap = (message) => {
     if (replyingTo && replyingTo._id === message._id) {
       setReplyingTo(null);
@@ -404,7 +408,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               />
             ) : (
               <div className="messages">
-                <ScrollableChat messages={messages} scrollToMessageId={scrollToMessageId} onMessageDoubleTap={handleDoubleTap}/>
+                <ScrollableChat messages={messages} scrollToMessageId={scrollToMessageId} onMessageDoubleTap={handleDoubleTap} resetScrollToMessageId={resetScrollToMessageId}/>
               </div>
             )}
 

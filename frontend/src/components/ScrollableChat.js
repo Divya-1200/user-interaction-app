@@ -12,7 +12,7 @@ import {
 import { ChatState } from "../Context/ChatProvider";
 import { useRef } from 'react';
 
-const ScrollableChat = ({ messages ,  scrollToMessageId, onMessageDoubleTap}) => {
+const ScrollableChat = ({ messages ,  scrollToMessageId, onMessageDoubleTap, resetScrollToMessageId}) => {
   const { user } = ChatState();
   const messagesContainerRef = useRef();
   const messageRefs = useRef(messages.map(() => React.createRef()));
@@ -30,6 +30,7 @@ const ScrollableChat = ({ messages ,  scrollToMessageId, onMessageDoubleTap}) =>
     ));
   };
 
+
   useEffect(() => {
     if (messages && scrollToMessageId) {
       scrollToMessage(scrollToMessageId);
@@ -39,11 +40,13 @@ const ScrollableChat = ({ messages ,  scrollToMessageId, onMessageDoubleTap}) =>
 
   const scrollToMessage = (messageId) => {
     const messageIndex = messages.findIndex((message) => message._id === messageId);
+    console.log("messageRefs ", messageRefs);
     if (messageIndex !== -1 && messageRefs.current[messageIndex].current) {
       messageRefs.current[messageIndex].current.scrollIntoView({
         behavior: 'smooth',
         block: 'start',
       });
+      resetScrollToMessageId(); 
     }
   };
 
