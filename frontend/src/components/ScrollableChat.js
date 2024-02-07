@@ -21,10 +21,7 @@ const ScrollableChat = ({ messages ,  scrollToMessageId, onMessageDoubleTap}) =>
     const date = new Date(createdAt);
     return date.toLocaleTimeString().substring(0,5);
   };
-  const [replyMode, setReplyMode] = useState(false);
-  const handleDoubleTap = () => {
-    setReplyMode(!replyMode);
-  };
+ 
   const renderTags = (tags) => {
     return tags.map((tag) => (
       <span key={tag._id} style={{ color: "blue", fontWeight: "bold" }}>
@@ -77,7 +74,7 @@ const ScrollableChat = ({ messages ,  scrollToMessageId, onMessageDoubleTap}) =>
             <span
               ref={i === messages.length - 1 ? messagesContainerRef : null} // Add ref here
               style={{
-                border: replyMode && '2px solid #FFB6C1',
+                
                 backgroundColor: `${m.sender._id === user._id ? "#BEE3F8" : "#B9F5D0" 
                   }` ,
                 marginLeft: isSameSenderMargin(messages, m, i, user._id),
@@ -91,14 +88,9 @@ const ScrollableChat = ({ messages ,  scrollToMessageId, onMessageDoubleTap}) =>
             <div
              
               style={{
-                
                 backgroundColor: "#d4edda",
-                //  flexDirection:  'column',
-                // marginLeft: isSameSenderMargin(messages, m, i, user._id),
-                // marginTop: isSameUser(messages, m, i, user._id) ? 3 : 10,
                 borderRadius: "20px",
                 padding: "5px 15px",
-                // maxWidth: "75%",
               }}
               onDoubleClick={() => onMessageDoubleTap(m)}
             >
@@ -123,7 +115,7 @@ const ScrollableChat = ({ messages ,  scrollToMessageId, onMessageDoubleTap}) =>
               )}
               </div>
               <div>{m.content}</div>
-              {m.tags && (
+              {m.tags  && m.tags.length > 0 && (
                 <hr style={{ margin: "5px 0" }}></hr>
               )}
               
