@@ -7,11 +7,12 @@ const messageRoutes = require("./routes/messageRoutes");
 const tagRoutes = require("./routes/tagRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const path = require("path");
+const cors = require('cors');
 
 dotenv.config();
 connectDB();
 const app = express();
-
+app.use(cors());
 app.use(express.json()); // to accept json data
 
 // app.get("/", (req, res) => {
@@ -74,14 +75,16 @@ io.on("connection", (socket) => {
   socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
 
   socket.on("new message", (newMessageRecieved) => {
+    // console.log("New Message Received: " + newMessageRecieved.chat.users._id)
     var chat = newMessageRecieved.chat;
 
     if (!chat.users) return console.log("chat.users not defined");
 
     chat.users.forEach((user) => {
-      if (user._id == newMessageRecieved.sender._id) return;
-
-      socket.in(user._id).emit("message recieved", newMessageRecieved);
+      if (user._id != newMessageRecieved.sender._id) {
+        socket.in(user._id).emit("message recieved", newMessageRecieved);
+        console.log("New Message Received: " + newMessageRecieved)
+      }
     });
   });
 

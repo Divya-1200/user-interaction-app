@@ -98,7 +98,7 @@ const ScrollableChat = ({ messages ,  scrollToMessageId, onMessageDoubleTap}) =>
                 // marginTop: isSameUser(messages, m, i, user._id) ? 3 : 10,
                 borderRadius: "20px",
                 padding: "5px 15px",
-                maxWidth: "75%",
+                // maxWidth: "75%",
               }}
               onDoubleClick={() => onMessageDoubleTap(m)}
             >
@@ -123,7 +123,10 @@ const ScrollableChat = ({ messages ,  scrollToMessageId, onMessageDoubleTap}) =>
               )}
               </div>
               <div>{m.content}</div>
-              <hr style={{ margin: "5px 0" }}></hr>
+              {m.tags && (
+                <hr style={{ margin: "5px 0" }}></hr>
+              )}
+              
               <div>{renderTags(m.tags)}</div>
               <div style={{ fontSize: "0.6em", color: "#888" }}>
                {formatCreatedAt(m.createdAt)}

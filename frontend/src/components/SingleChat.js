@@ -12,12 +12,11 @@ import ScrollableChat from "./ScrollableChat";
 import Lottie from "react-lottie";
 import animationData from "../animations/typing.json";
 import TagListItem from "./userAvatar/TagListItem";
-import UserListItem from "./userAvatar/UserListItem";
 import MessageListItem from "./userAvatar/MessageListItem";
 import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { ChatState } from "../Context/ChatProvider";
-import { Tooltip,  List, ListItem } from "@chakra-ui/react";
+import { Tooltip } from "@chakra-ui/react";
 
 
 const ENDPOINT = "http://localhost:3388";
@@ -33,13 +32,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [istyping, setIsTyping] = useState(false);
   const toast = useToast();
   const [search, setSearch] = useState("");
-  // const [tags, setTags] = useState([]);
   const [tagSearch, setTagSearch] = useState(false);
   const [tagSearchKey, setTagSearchKey] = useState('');
   const [searchTagResult, setSearchTagResult] = useState([]);
   const [messageTags, setMessageTags] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showSearchBox, setShowSearchBox] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [scrollToMessageId, setScrollToMessageId] = useState(null);
   const [priorityMessage, setPriorityMessage] = useState(false);
@@ -100,7 +96,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         };
         setNewMessage("");
         setMessageTags(async (prevMessageTags) => {
-          const updatedTags = [...prevMessageTags];
+          const updatedTags = Array.isArray(prevMessageTags) ? [...prevMessageTags] : [];
           const { data } = await axios.post(
             "http://localhost:3388/api/message",
             {
@@ -113,6 +109,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             },
             config
           );
+          console.log(data);
           socket.emit("new message", data);
           setMessages([...messages, data]);
           setMessageTags([]);
@@ -140,6 +137,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   
   useEffect(() => {
     socket = io(ENDPOINT);
+    console.log("user in client socket", user);
     socket.emit("setup", user);
     socket.on("connected", () => setSocketConnected(true));
     socket.on("typing", () => setIsTyping(true));
@@ -157,6 +155,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   useEffect(() => {
     socket.on("message recieved", (newMessageRecieved) => {
+      console.log("message is received here ",newMessageRecieved);
       if (
         !selectedChatCompare || // if chat is not selected or doesn't match current chat
         selectedChatCompare._id !== newMessageRecieved.chat._id
@@ -293,7 +292,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   useEffect(() => {
     handleSearch(); // Initial search when component mounts
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = (e) => {
