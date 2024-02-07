@@ -68,6 +68,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         `http://localhost:3388/api/message/${selectedChat._id}`,
         config
       );
+      // console.log("all messages ",data);
       setMessages(data);
       setLoading(false);
 
@@ -109,7 +110,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             },
             config
           );
-          console.log(data);
+          // console.log(data);
           socket.emit("new message", data);
           setMessages([...messages, data]);
           setMessageTags([]);
@@ -154,8 +155,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }, [selectedChat]);
 
   useEffect(() => {
-    socket.on("message recieved", (newMessageRecieved) => {
-      console.log("message is received here ",newMessageRecieved);
+    socket.on("message sent", (newMessageRecieved) => {
+      // console.log("message is received here ",newMessageRecieved);
       if (
         !selectedChatCompare || // if chat is not selected or doesn't match current chat
         selectedChatCompare._id !== newMessageRecieved.chat._id

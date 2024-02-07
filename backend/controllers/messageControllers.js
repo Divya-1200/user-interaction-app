@@ -15,13 +15,16 @@ const allMessages = asyncHandler(async (req, res) => {
       .populate("sender", "name pic email")
       .populate("tags")
       .populate("reply")
-      .populate("chat");
-
+      .populate("chat").exec();
       messages = await User.populate(messages, {
         path: "reply.sender",
         select: "name pic email",
       });
-
+      messages = await User.populate(messages, {
+        path: "chat.users.user",
+        select: "name pic email",
+      });
+      // console.log(messages);
     res.json(messages);
   } catch (error) {
     res.status(400);
@@ -70,7 +73,7 @@ for (const tag of tags) {
     message = await message.populate("chat").execPopulate();
     message = await message.populate("reply").execPopulate();
     message = await User.populate(message, {
-      path: "chat.users",
+      path: "chat.users.user",
       select: "name pic email",
     });
     message = await User.populate(message, {
