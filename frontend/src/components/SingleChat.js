@@ -25,7 +25,7 @@ var socket, selectedChatCompare;
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [tagLoading, setTagLoading] = useState(false);
+  // const [tagLoading, setTagLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [socketConnected, setSocketConnected] = useState(false);
   const [typing, setTyping] = useState(false);
@@ -172,6 +172,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   });
   useEffect(() => {
     // console.log("Updated messageTags:", messageTags);
+   // eslint-disable-next-line react-hooks/exhaustive-deps
 
     }, [messageTags]);
 
@@ -293,6 +294,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   useEffect(() => {
     handleSearch(); // Initial search when component mounts
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = (e) => {

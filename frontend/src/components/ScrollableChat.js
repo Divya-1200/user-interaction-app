@@ -1,7 +1,7 @@
 import { Avatar } from "@chakra-ui/avatar";
 import { Tooltip } from "@chakra-ui/tooltip";
 import ScrollableFeed from "react-scrollable-feed";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import {
   isLastMessage,
@@ -34,6 +34,7 @@ const ScrollableChat = ({ messages ,  scrollToMessageId, onMessageDoubleTap}) =>
     if (messages && scrollToMessageId) {
       scrollToMessage(scrollToMessageId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages, scrollToMessageId]);
 
   const scrollToMessage = (messageId) => {
