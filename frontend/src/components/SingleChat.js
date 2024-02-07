@@ -25,7 +25,7 @@ var socket, selectedChatCompare;
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
-  // const [tagLoading, setTagLoading] = useState(false);
+  const [tagLoading, setTagLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [socketConnected, setSocketConnected] = useState(false);
   const [typing, setTyping] = useState(false);
@@ -188,6 +188,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       const query = e.target.value.split("#").pop(); // Extract the tag query after "#"
       setTagSearch(true);
       setTagSearchKey(query);
+      // setTagLoading(true);
       const config = {
         headers: {
           Authorization: `Bearer ${user.token}`,
@@ -203,6 +204,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         console.error("Error fetching tags:", error);
       }
     }
+    // setTagLoading(false);
     if(e.target.value.startsWith("!!") && !priorityMessage){
       setPriorityMessage(true);
     }
@@ -430,11 +432,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               ) : (
                 <></>
               )}
-              {loading ? (
-              // <ChatLoading />
-              <div>Loading...</div>
-            ) : (
-              Array.isArray(searchTagResult) ? (
+              {Array.isArray(searchTagResult) ? (
                 searchTagResult
                   .slice(0, 4)
                   .map((tag) => (
@@ -447,7 +445,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               ) : (
                 <div>No tags found</div>
               )
-            )}
+            }
 
             {replyingTo && (
                 <div style={{ marginBottom: '10px' }}>
