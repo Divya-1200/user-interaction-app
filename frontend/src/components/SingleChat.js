@@ -17,6 +17,7 @@ import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { ChatState } from "../Context/ChatProvider";
 import { Tooltip } from "@chakra-ui/react";
+import { TimeIcon } from "@chakra-ui/icons";
 
 
 const ENDPOINT = "http://localhost:3388";
@@ -295,10 +296,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
-  useEffect(() => {
-    handleSearch(); // Initial search when component mounts
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   handleSearch(); // Initial search when component mounts
+  //     // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   const handleChange = (e) => {
     setSearch(e.target.value);
@@ -368,6 +369,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   
                   </Tooltip>
                   
+                  <IconButton d={{ base: "flex" }} icon={<TimeIcon />} />
+
+                  
                   <UpdateGroupChatModal
                     fetchMessages={fetchMessages}
                     fetchAgain={fetchAgain}
@@ -430,8 +434,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   />
                 </div>
               ) : (
-                <></>
+                <div></div>
               )}
+              
               {Array.isArray(searchTagResult) ? (
                 searchTagResult
                   .slice(0, 4)
@@ -440,7 +445,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                       key={tag._id}
                       tag={tag}
                       handleFunction={() => handleAddTag(tag)}
-                    />
+                   />
+                  
                   ))
               ) : (
                 <div>No tags found</div>

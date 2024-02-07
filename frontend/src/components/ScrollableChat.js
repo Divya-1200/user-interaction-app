@@ -40,7 +40,6 @@ const ScrollableChat = ({ messages ,  scrollToMessageId, onMessageDoubleTap, res
 
   const scrollToMessage = (messageId) => {
     const messageIndex = messages.findIndex((message) => message._id === messageId);
-    console.log("messageRefs ", messageRefs);
     if (messageIndex !== -1 && messageRefs.current[messageIndex].current) {
       messageRefs.current[messageIndex].current.scrollIntoView({
         behavior: 'smooth',
