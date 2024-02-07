@@ -17,7 +17,7 @@ import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { ChatState } from "../Context/ChatProvider";
 import { Tooltip } from "@chakra-ui/react";
-import { TimeIcon } from "@chakra-ui/icons";
+import GraphModal from "./miscellaneous/GraphModal";
 
 
 const ENDPOINT = "http://localhost:3388";
@@ -26,7 +26,6 @@ var socket, selectedChatCompare;
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [tagLoading, setTagLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [socketConnected, setSocketConnected] = useState(false);
   const [typing, setTyping] = useState(false);
@@ -63,17 +62,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-
       setLoading(true);
-
       const { data } = await axios.get(
         `http://localhost:3388/api/message/${selectedChat._id}`,
         config
       );
-      // console.log("all messages ",data);
+      console.log("all messages ",data);
       setMessages(data);
       setLoading(false);
-
       socket.emit("join chat", selectedChat._id);
     } catch (error) {
       toast({
@@ -369,9 +365,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   
                   </Tooltip>
                   
-                  <IconButton d={{ base: "flex" }} icon={<TimeIcon />} />
-
-                  
+                  <GraphModal chatMessages={messages}/>
                   <UpdateGroupChatModal
                     fetchMessages={fetchMessages}
                     fetchAgain={fetchAgain}
