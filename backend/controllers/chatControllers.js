@@ -93,7 +93,6 @@ const fetchChats = asyncHandler(async (req, res) => {
 //@route           POST /api/chat/group
 //@access          Protected
 const createGroupChat = asyncHandler(async (req, res) => {
-  console.log("createGroupChat");
   if (!req.body.users || !req.body.name) {
     return res.status(400).send({ message: "Please Fill all the feilds" });
   }
@@ -122,7 +121,7 @@ const createGroupChat = asyncHandler(async (req, res) => {
 
     const invitePromises = users.map(async (user) => {
       if (user !== req.user) {
-        await sendInvitationEmail(user, groupChat);
+        await sendInvitationEmail(user, groupChat, req.user);
       }
     });
     await Promise.all(invitePromises);
@@ -136,9 +135,9 @@ const createGroupChat = asyncHandler(async (req, res) => {
     throw new Error(error.message);
   }
 });
-const sendInvitationEmail = async (user, groupChat) => {
-  console.log("Invitation", user);
-  const invitationLink = `http://localhost:3388/api/chat/accept?userId=${user._id}&chatId=${groupChat._id}`;
+const sendInvitationEmail = async (user, groupChat, invitor) => {
+  console.log("invitor ",invitor)
+  const invitationLink = `http://localhost:3000/accept/${user._id}/${groupChat._id}`;
   try {
     await sendEmail({
       to: user.email,
@@ -176,8 +175,6 @@ const sendEmail = async ({ to, subject, body }) => {
   };
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('here in send mail 123');
-    console.log('Email sent: ', info.response);
   } catch (error) {
     console.error('Error sending email: ', error);
     throw new Error('Error sending email');
@@ -185,19 +182,28 @@ const sendEmail = async ({ to, subject, body }) => {
 };
 
 // @desc  addFromTag
-// @route  /api/chat/accept
+// @route  /api/chat/accept/:id
 // @access  Protected
 const acceptInvitation = asyncHandler (async (req, res) => {
-  const {userId, chatId } = req.query;
+  const chatId  = req.params.chatId;
+  const userId   = req.params.userId 
+  console.log('userId:', userId);
   try {
     const chat = await Chat.findByIdAndUpdate(
       chatId,
       { $set: { 'users.$[elem].status': 'accepted' } },
-      { arrayFilters: [{ 'elem.user': userId }] }
+      { arrayFilters: [{ 'elem.user._id': userId }],
+      new: true },
+     
     );
+    if (!chat || !chat.users.some(user => user.user._id === userId)) {
+      res.status(404).json({ message: 'User ID not found in the chat.' });
+      return;
+    }
     res.status(200).json({ message: 'Invitation accepted successfully.' });
   } catch (error) {
     res.status(400).json({ message: 'Failed to accept invitation.' });
+    throw new Error(error.message);
   }
 });
 

@@ -67,7 +67,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         `http://localhost:3388/api/message/${selectedChat._id}`,
         config
       );
-      console.log("all messages ",data);
       setMessages(data);
       setLoading(false);
       socket.emit("join chat", selectedChat._id);

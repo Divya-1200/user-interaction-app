@@ -94,7 +94,6 @@ function SideDrawer() {
   };
 
   const accessChat = async (userId) => {
-    console.log("Accessing");
     try {
       setLoadingChat(true);
       const config = {
@@ -103,7 +102,6 @@ function SideDrawer() {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      console.log("this is the configuaration ",JSON.stringify(config));
       const { data } = await axios.post(`http://localhost:3388/api/chat`, { userId }, config);
       if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
       setSelectedChat(data);

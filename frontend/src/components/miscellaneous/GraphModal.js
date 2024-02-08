@@ -47,7 +47,6 @@ const GraphModal = ({chatMessages}) => {
   };
 
   useEffect(() => {
-    console.log("chatMessages ", chatMessages);
     if (chatMessages.length > 0) {
       const filteredMessages = chatMessages.filter(message => message.createdAt);
       const groupedMessages = groupMessagesByDate(filteredMessages);
@@ -93,7 +92,7 @@ const GraphModal = ({chatMessages}) => {
     count: messageCounts[userEmail],
   }));
   setUserMessageCountData(data);
-  console.log(data);
+//   console.log("message count ",data);
   }, [chatMessages]);
   useEffect(() => {
     if (messageCountData.length > 0) {
@@ -108,7 +107,7 @@ const GraphModal = ({chatMessages}) => {
       <IconButton icon={<TimeIcon />} onClick={handleOpen} />
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
-        <ModalContent maxWidth="90%" maxHeight="90%"> {/* Set maxWidth and maxHeight here */}
+        <ModalContent maxWidth="90%" maxHeight="100%"> {/* Set maxWidth and maxHeight here */}
         <ModalHeader>Chat Analytics</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -161,8 +160,8 @@ const GraphModal = ({chatMessages}) => {
                 borderRadius="lg"
                 display={activeIndex === 2 ? 'block' : 'none'}
               >
-               <div style={{ width: '100%', height: '100%', overflowX: 'auto' }}>
-               <ResponsiveContainer width="100%" height="100%">
+               <div style={{ width: '50%', height: '50%', overflowX: 'auto' }}>
+               <ResponsiveContainer width="50%" height="50%">
                     <BarChart data={userMessageCountData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="user" angle={-45} textAnchor="end" label={{ value: 'Users', position: 'insideBottom' }}/>
