@@ -25,7 +25,10 @@ const MyChats = ({ fetchAgain }) => {
       };
 
       const { data } = await axios.get("http://localhost:3388/api/chat", config);
-      setChats(data);
+      const acceptedChats = data.filter(chat => chat.users.some(user1 => user1.user._id ===  user._id && user1.status === 'accepted'));
+      console.log("userchats ", user._id);
+
+      setChats(acceptedChats);
     } catch (error) {
       console.error(error);
       toast({

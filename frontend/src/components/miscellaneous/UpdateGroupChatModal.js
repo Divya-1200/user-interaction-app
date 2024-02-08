@@ -417,7 +417,8 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
               {selectedChat.users.map((u) => (
                 <UserBadgeItem
                   key={u.user._id}
-                  user={u}
+                  user={u.user}
+                  status={u.status}
                   admin={selectedChat.groupAdmin}
                   handleFunction={() => handleRemove(u.user)}
                 />
