@@ -107,7 +107,7 @@ const GraphModal = ({chatMessages}) => {
       <IconButton icon={<TimeIcon />} onClick={handleOpen} />
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
-        <ModalContent maxWidth="90%" maxHeight="100%"> {/* Set maxWidth and maxHeight here */}
+        <ModalContent maxWidth="90%" maxHeight="150%"> 
         <ModalHeader>Chat Analytics</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -121,10 +121,10 @@ const GraphModal = ({chatMessages}) => {
                 display={activeIndex === 0 ? 'block' : 'none'}
               >
             <div style={{ width: '100%', height: '100%', overflowX: 'auto' }}>
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="95%" height="100%">
                 <LineChart data={messageCountData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" angle={-45} label={{ value: 'Date', position: 'insideBottom', offset: -5 }}  />
+                    <XAxis dataKey="date" angle={0} textAnchor="middle" label={{ value: 'Date', position: 'insideBottom', offset: -5 }}  />
                     <YAxis  label={{ value: 'Message Count', angle: -90, position: 'insideLeft' }}/>
                     <Tooltip />
                     <Legend />
@@ -136,42 +136,46 @@ const GraphModal = ({chatMessages}) => {
               <Box
                 w="100%"
                 h="500px"
-                mb="20"
+                mb="4" ml="4" mr="4"
                 borderRadius="lg"
                 display={activeIndex === 1 ? 'block' : 'none'}
               >
                 <div style={{ width: '100%', height: '100%', overflowX: 'auto' }}>
-               <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={tagCounts}>
+               <ResponsiveContainer width="95%" height={500}>
+                    <BarChart  data={tagCounts}>
                     <CartesianGrid strokeDasharray="1 1" />
-                    <XAxis dataKey="tag" angle={-45} textAnchor="end" label={{ value: 'Tags', position: 'insideBottom'}}/>
-                    <YAxis label={{ value: 'Tag count', angle: -90, position: 'insideLeft' }} />
+                    <XAxis dataKey="tag" angle={-45}  textAnchor="end" label={{ value: 'Tags', position: 'insideBottom', dy: 10}}/>
+                    <YAxis label={{ value: 'Tag count', angle: -90, position: 'insideLeft'  }} />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="count" fill="#8884d8" barSize={50}/>
+                    <Bar isAnimationActive={false} minPointSize={15} dataKey="count" fill="#8884d8" barSize={50}/>
                     </BarChart>
                 </ResponsiveContainer>
                 </div>
               </Box>
-              <Box
+              <Box 
                 w="100%"
                 h="500px"
-                mb="4"
+                mb="20"
                 borderRadius="lg"
                 display={activeIndex === 2 ? 'block' : 'none'}
               >
-               <div style={{ width: '50%', height: '50%', overflowX: 'auto' }}>
-               <ResponsiveContainer width="50%" height="50%">
-                    <BarChart data={userMessageCountData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="user" angle={-45} textAnchor="end" label={{ value: 'Users', position: 'insideBottom' }}/>
-                    <YAxis label={{ value: 'Total Messages sent', angle: -90, position: 'insideLeft' }} />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="count" fill="#8884d8" barSize={50}/>
-                    </BarChart>
-                </ResponsiveContainer>
-                </div>
+               <div style={{ width: '100%', height: '100%', overflowX: 'auto' }}>
+              <ResponsiveContainer width="95%" height="100%">
+                <BarChart data={userMessageCountData}>
+                  <CartesianGrid strokeDasharray="1 1" />
+                  <XAxis
+                    dataKey="user"
+                    angle={0} textAnchor="middle" // Align text in the middle
+                    label={{ value: 'Users', position: 'insideBottom', dy: 10 }} // Adjust position with dy
+                  />
+                  <YAxis label={{ value: 'Total Messages sent', angle: -90, position: 'insideLeft' }} />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="count" fill="#8884d8" barSize={50} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
               </Box>
               <Box paddingLeft="4">
                 <IconButton icon={<ChevronRightIcon />} onClick={handleNext} />

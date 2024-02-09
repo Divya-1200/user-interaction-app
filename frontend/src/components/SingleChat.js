@@ -35,7 +35,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [tagSearch, setTagSearch] = useState(false);
   const [tagSearchKey, setTagSearchKey] = useState('');
   const [searchTagResult, setSearchTagResult] = useState([]);
-  const [messageTags, setMessageTags] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [scrollToMessageId, setScrollToMessageId] = useState(null);
   const [priorityMessage, setPriorityMessage] = useState(false);
@@ -93,9 +92,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           },
         };
         const hashtagRegex = /#\w+/g;
-        const wordsWithTags = newMessage.match(hashtagRegex);
+        const wordsWithTags = newMessage.match(hashtagRegex) || [];
         const wordsWithoutTags = wordsWithTags.map(word => word.slice(1));
-        console.log(wordsWithoutTags);
         setNewMessage("");
           const { data } = await axios.post(
             "http://localhost:3388/api/message",
@@ -110,13 +108,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             config
           );
           socket.emit("new message", data);
+         
           setMessages([...messages, data]);
-          setMessageTags([]);
           setPriorityMessage(false);
         if (replyingTo) {
           setReplyingTo(null);
         }
       } catch (error) {
+        console.log(error);
         toast({
           title: "Error Occured!",
           description: "Failed to send the Message",
@@ -166,11 +165,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       }
     });
   });
-  useEffect(() => {
-    // console.log("Updated messageTags:", messageTags);
-   // eslint-disable-next-line react-hooks/exhaustive-deps
-
-    }, [messageTags]);
+ 
 
   const typingHandler =  async (e) => {
     setNewMessage(e.target.value);
@@ -219,56 +214,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }, timerLength);
   };
 
-  const handleKeyDown =  async (e) => {
-    if (e.key === " " && tagSearch) {
-      setMessageTags((prevMessageTags) => [...prevMessageTags, tagSearchKey]);  
-      setTagSearch(false);
-      setSearchTagResult([]);
-    }
-    
-    if(e.key === 'Enter' && tagSearch){
-      setMessageTags((prevMessageTags) => [...prevMessageTags, tagSearchKey]);  
-      setTagSearch(false);
-      setSearchTagResult([]);
-    }
-
-    if (e.key === "Backspace") {
-      if (newMessage.endsWith("#")) {
-        setTagSearch(false);
-        setSearchTagResult([]);
-        setTagSearchKey('');
-        setMessageTags((prevMessageTags) => {
-          const updatedMessageTags = [...prevMessageTags];
-          updatedMessageTags.pop();
-          return updatedMessageTags;
-
-        }); 
-       
-      }
-      /** It must be like when backspace is pressed and the hashtag value is modified then the tag must be modified in this set need to work on this  */
-      // else {
-      //   // Check if the previous character is a hashtag
-      //   const lastHashIndex = newMessage.lastIndexOf('#');
-      //   const previousChar = newMessage.charAt(lastHashIndex - 1);
-        
-      //   if (previousChar === '#') {
-      //     // Remove the last message tag
-      //     setMessageTags((prevMessageTags) => {
-      //       const updatedMessageTags = [...prevMessageTags];
-      //       updatedMessageTags.pop(); // Remove the last element
-      //       console.log("prevMessageTags", prevMessageTags);
-      //       return updatedMessageTags;
-      //     });
-      //   }
-      // }      
-    }
-  }
+  
 
   const handleAddTag = (tag) => {
     const lastHashIndex = newMessage.lastIndexOf('#');
-    if(!messageTags.includes(tag.tag)){
-      setMessageTags([...messageTags, tag.tag]); // Add the selected tag to messageTags
-    }
     setSearchTagResult([]); // Clear the tag search results
     setTagSearch(false); // Reset tag search state
     setNewMessage(
@@ -290,10 +239,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
-  // useEffect(() => {
-  //   handleSearch(); // Initial search when component mounts
-  //     // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
 
   const handleChange = (e) => {
     setSearch(e.target.value);
@@ -457,7 +402,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 placeholder="Enter a message.."
                 value={newMessage}
                 onChange={typingHandler}
-                onKeyDown={handleKeyDown}
+               
               />
              
             </FormControl>

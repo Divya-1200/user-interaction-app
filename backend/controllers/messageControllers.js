@@ -69,7 +69,7 @@ for (const tag of tags) {
   try {
     var message = await Message.create(newMessage);
 
-    message = await message.populate("sender", "name pic").execPopulate();
+    message = await message.populate("sender", "name pic email").execPopulate();
     message = await message.populate("chat").execPopulate();
     message = await message.populate("reply").execPopulate();
     message = await User.populate(message, {
