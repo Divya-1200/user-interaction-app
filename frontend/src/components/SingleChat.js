@@ -92,14 +92,16 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             Authorization: `Bearer ${user.token}`,
           },
         };
+        const hashtagRegex = /#\w+/g;
+        const wordsWithTags = newMessage.match(hashtagRegex);
+        const wordsWithoutTags = wordsWithTags.map(word => word.slice(1));
+        console.log(wordsWithoutTags);
         setNewMessage("");
-        setMessageTags(async (prevMessageTags) => {
-          const updatedTags = Array.isArray(prevMessageTags) ? [...prevMessageTags] : [];
           const { data } = await axios.post(
             "http://localhost:3388/api/message",
             {
               content : newMessage,
-              tags    : updatedTags,
+              tags    : wordsWithoutTags,
               chatId  : selectedChat,
               priority : priorityMessage,
               users : selectedChat.users,
@@ -107,13 +109,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             },
             config
           );
-          // console.log(data);
           socket.emit("new message", data);
           setMessages([...messages, data]);
           setMessageTags([]);
           setPriorityMessage(false);
-        });
-        // setMessageTags([]);
         if (replyingTo) {
           setReplyingTo(null);
         }
