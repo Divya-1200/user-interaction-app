@@ -61,6 +61,7 @@ const accessChat = asyncHandler(async (req, res) => {
 //@route           GET /api/chat/
 //@access          Protected
 const fetchChats = asyncHandler(async (req, res) => {
+  console.log(req.user);
   try {
     Chat.find({"users.user": req.user._id  })
     .populate({
@@ -181,22 +182,24 @@ const sendEmail = async ({ to, subject, body }) => {
   }
 };
 
-// @desc  addFromTag
+// @desc  
 // @route  /api/chat/accept/:id
 // @access  Protected
 const acceptInvitation = asyncHandler (async (req, res) => {
   const chatId  = req.params.chatId;
   const userId   = req.params.userId 
-  console.log('userId:', userId);
+  console.log('userId: ', userId);
   try {
     const chat = await Chat.findByIdAndUpdate(
       chatId,
       { $set: { 'users.$[elem].status': 'accepted' } },
-      { arrayFilters: [{ 'elem.user._id': userId }],
-      new: true },
-     
+      {
+        arrayFilters: [{ 'elem.user': userId }],
+        new: true, 
+      }
     );
-    if (!chat || !chat.users.some(user => user.user._id === userId)) {
+    console.log('chat: ', chat);
+    if (!chat || !chat.users.some(user => user.user._id.toString() === userId)) {
       res.status(404).json({ message: 'User ID not found in the chat.' });
       return;
     }

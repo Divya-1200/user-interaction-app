@@ -8,14 +8,14 @@ import ChatLoading from "./ChatLoading";
 import GroupChatModal from "./miscellaneous/GroupChatModal";
 import { Button } from "@chakra-ui/react";
 import { ChatState } from "../Context/ChatProvider";
-
+import { useHistory } from "react-router";
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
 
   const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
-
+  const [notacceptedChats, setNotAcceptedChats] = useState([]);
   const toast = useToast();
-
+  const history = useHistory();
   const fetchChats = async () => {
     try {
       const config = {
@@ -23,10 +23,12 @@ const MyChats = ({ fetchAgain }) => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-
+      console.log("user info ",user);
       const { data } = await axios.get("http://localhost:3388/api/chat", config);
       const acceptedChats = data.filter(chat => chat.users.some(user1 => user1.user._id ===  user._id && user1.status === 'accepted'));
-      console.log("userchats ", user._id);
+      const notacceptedChats = data.filter(chat => chat.users.some(user1 => user1.user._id ===  user._id && user1.status === 'pending'));
+      setNotAcceptedChats(notacceptedChats);
+      console.log("userchats ", acceptedChats);
 
       setChats(acceptedChats);
     } catch (error) {
@@ -42,6 +44,39 @@ const MyChats = ({ fetchAgain }) => {
     }
   };
 
+  const handleAccept = async(chat) => {
+    console.log("chat_id",chat._id);
+    console.log("user id", user._id);
+    try{
+      const config = {
+        headers: {
+            Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const {data} = await axios.get(`http://localhost:3388/api/chat/accept/${user._id}/${chat._id}`, config);
+      console.log(data);
+      toast({
+          title: "Invitation Accepted",
+          description: "You have been joined the group",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "top",
+      });
+      history.push("/");
+    }
+    catch (error) {
+      toast({
+        title: "Error Occurred!",
+        description: "An error occurred while accepting the invitation.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+    });
+    history.push("/");
+    }
+  };
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
@@ -122,6 +157,59 @@ const MyChats = ({ fetchAgain }) => {
         ) : (
           <ChatLoading />
         )}
+        <div
+        ></div>
+        {notacceptedChats? (
+        <Stack overflowY="scroll">
+         
+          {notacceptedChats.map((chat) => (
+            <Box
+              onClick={() => setSelectedChat(chat)}
+              cursor="pointer"
+              bg={selectedChat === chat ? "#38B2AC" : "#E8E8E8"}
+              color={selectedChat === chat ? "white" : "black"}
+              px={3}
+              py={2}
+              borderRadius="lg"
+              key={chat._id}          
+            >    
+              <Box display="flex"
+                alignItems="center"
+                justifyContent="space-between">
+                <Text>
+                      {!chat.isGroupChat
+                        ? getSender(loggedUser, chat.users)
+                        : chat.chatName}
+                </Text>
+                <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAccept(chat);
+                    }}
+                    colorScheme="green"
+                    borderRadius="lg"
+                  
+                  >
+                    Accept
+                </Button>
+              </Box>
+              {chat.latestMessage && (
+                    <Text fontSize="xs">
+                      <b>{chat.latestMessage.sender.name} : </b>
+                      {chat.latestMessage.content.length > 50
+                        ? chat.latestMessage.content.substring(0, 51) + "..."
+                        : chat.latestMessage.content}
+                    </Text>
+                  )} 
+        </Box>
+       
+         
+    ))}
+  </Stack>
+) : (
+  <ChatLoading />
+)}
+
       </Box>
     </Box>
   );
