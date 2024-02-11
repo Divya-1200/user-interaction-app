@@ -169,9 +169,11 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
         },
         config
       );
+      console.log("selected chat ",data);
       setSelectedChat(data);
       setFetchAgain(!fetchAgain);
       setLoading(false);
+      setSearchTagResult([]);
     } catch (error) {
       toast({
         title: "Error Occured!",
@@ -226,6 +228,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       setSelectedChat(data);
       setFetchAgain(!fetchAgain);
       setLoading(false);
+      setSearchResult([]);
     } catch (error) {
       toast({
         title: "Error Occured!",
@@ -270,6 +273,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       setFetchAgain(!fetchAgain);
       fetchMessages();
       setLoading(false);
+      
     } catch (error) {
       toast({
         title: "Error Occured!",
@@ -333,12 +337,18 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     }
     setGroupChatName("");
   };
-
+  const handleCloseModal = () => {
+    setEditing(false); 
+    setGroupChatDescription('');
+    setGroupChatName(''); 
+    setSearchResult([]); 
+    setSearchTagResult([]); 
+    onClose(); 
+  };
   return (
     <>
       <IconButton d={{ base: "flex" }} icon={<ViewIcon />} onClick={onOpen} />
-
-      <Modal onClose={onClose} isOpen={isOpen} isCentered>
+      <Modal onClose={handleCloseModal} isOpen={isOpen} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader

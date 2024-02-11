@@ -227,18 +227,17 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   /**Search bar*/
   const handleSearch = async () => {
-    // Perform the search based on the 'search' query
-    try {
+    try {      
+      console.log('Search', search);
+      const regexPattern = new RegExp(search, 'i'); 
       const filteredMessages = messages.filter((message) =>
-      message.content.toLowerCase().includes(search.toLowerCase())
-    );
+        regexPattern.test(message.content)
+      );
       setSearchResults(filteredMessages);
-      // setSearchResults(response.data);
     } catch (error) {
       console.error("Error searching messages:", error);
     }
   };
-
 
   const handleChange = (e) => {
     setSearch(e.target.value);

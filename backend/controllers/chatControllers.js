@@ -343,8 +343,9 @@ const addToGroup = asyncHandler(async (req, res) => {
       path: "users.user",
       select: "name pic email",
     })
-    .populate("groupAdmin", "-password");
-  
+    .populate("groupAdmin", "-password")
+    .populate("tags",  "-password");
+    
     sendInvitationEmail(user, chat);
     if (!added) {
       res.status(404);
@@ -392,7 +393,10 @@ const addFromTag  = asyncHandler(async (req, res) => {
       new: true,
     }
   )
-    .populate("users", "-password")
+  .populate({
+    path: "users.user",
+    select: "name pic email",
+  })
     .populate("tags",  "-password")
     .populate("groupAdmin", "-password");
 
