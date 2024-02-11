@@ -56,17 +56,18 @@ function SideDrawer() {
     history.push("/");
   };
 
-  const handleSearch = async () => {
-    if (!search) {
-      toast({
-        title: "Please Enter something in search",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "top",
-      });
-      return;
-    }
+  const handleSearch = async (query) => {
+
+    // if (!search) {
+    //   toast({
+    //     title: "Please Enter something in search",
+    //     status: "warning",
+    //     duration: 5000,
+    //     isClosable: true,
+    //     position: "top",
+    //   });
+    //   return;
+    // }
 
     try {
       setLoading(true);
@@ -77,7 +78,7 @@ function SideDrawer() {
         },
       };
 
-      const { data } = await axios.get(`http://localhost:3388/api/user?search=${search}`, config);
+      const { data } = await axios.get(`http://localhost:3388/api/user?search=${query}`, config);
 
       setLoading(false);
       setSearchResult(data);
@@ -92,6 +93,7 @@ function SideDrawer() {
       });
     }
   };
+
 
   const accessChat = async (userId) => {
     try {
@@ -190,16 +192,16 @@ function SideDrawer() {
       <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
         <DrawerOverlay />
         <DrawerContent>
-          <DrawerHeader borderBottomWidth="1px">Search Users</DrawerHeader>
+          <DrawerHeader borderBottomWidth="1px">Search</DrawerHeader>
           <DrawerBody>
             <Box d="flex" pb={2}>
               <Input
-                placeholder="Search by name or email"
+                placeholder="Search"
                 mr={2}
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => handleSearch(e.target.value)}
               />
-              <Button onClick={handleSearch}>Go</Button>
+              {/* <Button onClick={handleSearch}>Go</Button> */}
             </Box>
             {loading ? (
               <ChatLoading />

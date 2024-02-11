@@ -154,6 +154,17 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     setGroupChatName("");
   };
   const handleAddTag = async (tag) => {
+    console.log("tags ", selectedChat.tags);
+    if (selectedChat.tags.find((u) => u.tag === tag.tag)) {
+      toast({
+        title: "Tag Already exists!",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
+      return;
+    }
     try {
       setLoading(true);
       const config = {
@@ -187,7 +198,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     }
   };
   const handleAddUser = async (user1) => {
-    if (selectedChat.users.find((u) => u._id === user1._id)) {
+    if (selectedChat.users.find((u) => u.user._id === user1._id)) {
       toast({
         title: "User Already in group!",
         status: "error",
