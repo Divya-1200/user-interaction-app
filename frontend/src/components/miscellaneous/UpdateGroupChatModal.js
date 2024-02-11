@@ -48,6 +48,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       ? selectedChat.groupDescription
       : "Add your group description here"
   );
+
   const handleEdit = () => {
     setEditing(!editing);
   };
@@ -151,7 +152,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       });
       setRenameLoading(false);
     }
-    setGroupChatName("");
+    setGroupChatName(groupChatName);
   };
   const handleAddTag = async (tag) => {
     console.log("tags ", selectedChat.tags);
@@ -251,7 +252,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       });
       setLoading(false);
     }
-    setGroupChatName("");
+    // setGroupChatName("");
   };
   const formatCreatedAt = (createdAt) => {
     const date = new Date(createdAt);
@@ -346,12 +347,12 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       });
       setLoading(false);
     }
-    setGroupChatName("");
+    // setGroupChatName("");
   };
   const handleCloseModal = () => {
     setEditing(false); 
-    setGroupChatDescription('');
-    setGroupChatName(''); 
+    // setGroupChatDescription('');
+    // setGroupChatName(''); 
     setSearchResult([]); 
     setSearchTagResult([]); 
     onClose(); 

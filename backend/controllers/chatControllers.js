@@ -345,7 +345,7 @@ const addToGroup = asyncHandler(async (req, res) => {
     })
     .populate("groupAdmin", "-password")
     .populate("tags",  "-password");
-    
+
     sendInvitationEmail(user, chat);
     if (!added) {
       res.status(404);
@@ -408,6 +408,18 @@ const addFromTag  = asyncHandler(async (req, res) => {
   }
 });
 
+const getGroupName = asyncHandler(async (req, res) => {
+  try {
+    const chats = await Chat.find();
+    res.status(200).json(chats);
+    console.log(chats);
+  } catch (error) {
+    console.error("Error retrieving chats:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+
 module.exports = {
   accessChat,
   fetchChats,
@@ -419,4 +431,5 @@ module.exports = {
   removeFromTag,
   addFromTag,
   acceptInvitation,
+  getGroupName,
 };

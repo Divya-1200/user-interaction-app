@@ -1,7 +1,7 @@
 import { Button } from "@chakra-ui/button";
 import { useDisclosure } from "@chakra-ui/hooks";
 import { Input } from "@chakra-ui/input";
-import { Box, Text } from "@chakra-ui/layout";
+import {Stack, Box, Text } from "@chakra-ui/layout";
 import {
   Menu,
   MenuButton,
@@ -68,20 +68,23 @@ function SideDrawer() {
     //   });
     //   return;
     // }
-
+    console.log("searching", query);
+    setSearch(query);
     try {
       setLoading(true);
-
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-
-      const { data } = await axios.get(`http://localhost:3388/api/user?search=${query}`, config);
-
-      setLoading(false);
-      setSearchResult(data);
+      console.log("searchResult", searchResult);
+      if(searchResult.length<=0){
+        const config = {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        };
+        const { data } = await axios.get(`http://localhost:3388/api/chat/all`, config);
+        setLoading(false);
+        console.log(data);
+        setSearchResult(data);
+      }
+      
     } catch (error) {
       toast({
         title: "Error Occured!",
@@ -203,7 +206,7 @@ function SideDrawer() {
               />
               {/* <Button onClick={handleSearch}>Go</Button> */}
             </Box>
-            {loading ? (
+            {/* {loading ? (
               <ChatLoading />
             ) : (
               searchResult?.map((user) => (
@@ -213,7 +216,28 @@ function SideDrawer() {
                   handleFunction={() => accessChat(user._id)}
                 />
               ))
-            )}
+            )} */}
+            {search ? (
+          <Stack overflowY="scroll">
+            {searchResult.map((chat) => (
+              <Box
+                onClick={() => setSelectedChat(chat)}
+                cursor="pointer"
+                px={3}
+                py={2}
+                borderRadius="lg"
+                key={chat._id}
+              >
+                <Text>
+                {chat.chatName}
+                </Text>
+                
+              </Box>
+            ))}
+          </Stack>
+        ) : (
+          <ChatLoading />
+        )}
             {loadingChat && <Spinner ml="auto" d="flex" />}
           </DrawerBody>
         </DrawerContent>
