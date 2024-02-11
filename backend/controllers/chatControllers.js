@@ -61,7 +61,7 @@ const accessChat = asyncHandler(async (req, res) => {
 //@route           GET /api/chat/
 //@access          Protected
 const fetchChats = asyncHandler(async (req, res) => {
-  console.log(req.user);
+
   try {
     Chat.find({"users.user": req.user._id  })
     .populate({
@@ -137,7 +137,7 @@ const createGroupChat = asyncHandler(async (req, res) => {
   }
 });
 const sendInvitationEmail = async (user, groupChat, invitor) => {
-  console.log("invitor ",invitor)
+
   const invitationLink = `http://localhost:3000/accept/${user._id}/${groupChat._id}`;
   try {
     await sendEmail({
@@ -188,7 +188,7 @@ const sendEmail = async ({ to, subject, body }) => {
 const acceptInvitation = asyncHandler (async (req, res) => {
   const chatId  = req.params.chatId;
   const userId   = req.params.userId 
-  console.log('userId: ', userId);
+
   try {
     const chat = await Chat.findByIdAndUpdate(
       chatId,
@@ -198,7 +198,7 @@ const acceptInvitation = asyncHandler (async (req, res) => {
         new: true, 
       }
     );
-    console.log('chat: ', chat);
+
     if (!chat || !chat.users.some(user => user.user._id.toString() === userId)) {
       res.status(404).json({ message: 'User ID not found in the chat.' });
       return;
@@ -412,7 +412,6 @@ const getGroupName = asyncHandler(async (req, res) => {
   try {
     const chats = await Chat.find();
     res.status(200).json(chats);
-    console.log(chats);
   } catch (error) {
     console.error("Error retrieving chats:", error);
     res.status(500).json({ message: "Server Error" });

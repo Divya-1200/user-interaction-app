@@ -155,7 +155,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     setGroupChatName(groupChatName);
   };
   const handleAddTag = async (tag) => {
-    console.log("tags ", selectedChat.tags);
+
     if (selectedChat.tags.find((u) => u.tag === tag.tag)) {
       toast({
         title: "Tag Already exists!",
@@ -181,7 +181,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
         },
         config
       );
-      console.log("selected chat ",data);
+
       setSelectedChat(data);
       setFetchAgain(!fetchAgain);
       setLoading(false);

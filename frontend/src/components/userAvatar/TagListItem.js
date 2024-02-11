@@ -1,7 +1,7 @@
 import { Box, Text } from "@chakra-ui/layout";
 
 const TagListItem = ({tag, handleFunction }) => {
-  console.log("tag ", tag);
+ 
   return (
     <Box
       onClick={handleFunction}

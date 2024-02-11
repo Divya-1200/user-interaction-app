@@ -115,7 +115,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           setReplyingTo(null);
         }
       } catch (error) {
-        console.log(error);
+   
         toast({
           title: "Error Occured!",
           description: "Failed to send the Message",
@@ -133,7 +133,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   
   useEffect(() => {
     socket = io(ENDPOINT);
-    // console.log("user in client socket", user);
+
     socket.emit("setup", user);
     socket.on("connected", () => setSocketConnected(true));
     socket.on("typing", () => setIsTyping(true));
@@ -151,7 +151,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   useEffect(() => {
     socket.on("message sent", (newMessageRecieved) => {
-      // console.log("message is received here ",newMessageRecieved);
+
       if (
         !selectedChatCompare || // if chat is not selected or doesn't match current chat
         selectedChatCompare._id !== newMessageRecieved.chat._id
@@ -228,7 +228,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   /**Search bar*/
   const handleSearch = async () => {
     try {      
-      console.log('Search', search);
+    
       const regexPattern = new RegExp(search, 'i'); 
       const filteredMessages = messages.filter((message) =>
         regexPattern.test(message.content)

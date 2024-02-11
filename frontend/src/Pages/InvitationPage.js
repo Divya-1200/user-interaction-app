@@ -20,7 +20,7 @@ function InvitationPage(){
                         },
                     };
                     const {data} = await axios.get(`http://localhost:3388/api/chat/accept/${userid}/${chatid}`, config);
-                    console.log(data);
+                  
                     toast({
                         title: "Invitation Accepted",
                         description: "You have been joined the group",

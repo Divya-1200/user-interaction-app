@@ -29,7 +29,7 @@ import ProfileModal from "./ProfileModal";
 import NotificationBadge from "react-notification-badge";
 import { Effect } from "react-notification-badge";
 import { getSender } from "../../config/ChatLogics";
-import UserListItem from "../userAvatar/UserListItem";
+// import UserListItem from "../userAvatar/UserListItem";
 import { ChatState } from "../../Context/ChatProvider";
 
 function SideDrawer() {
@@ -58,21 +58,10 @@ function SideDrawer() {
 
   const handleSearch = async (query) => {
 
-    // if (!search) {
-    //   toast({
-    //     title: "Please Enter something in search",
-    //     status: "warning",
-    //     duration: 5000,
-    //     isClosable: true,
-    //     position: "top",
-    //   });
-    //   return;
-    // }
-    console.log("searching", query);
     setSearch(query);
     try {
       setLoading(true);
-      console.log("searchResult", searchResult);
+     
       if(searchResult.length<=0){
         const config = {
           headers: {
@@ -81,9 +70,10 @@ function SideDrawer() {
         };
         const { data } = await axios.get(`http://localhost:3388/api/chat/all`, config);
         setLoading(false);
-        console.log(data);
+    
         setSearchResult(data);
       }
+
       
     } catch (error) {
       toast({
@@ -98,31 +88,31 @@ function SideDrawer() {
   };
 
 
-  const accessChat = async (userId) => {
-    try {
-      setLoadingChat(true);
-      const config = {
-        headers: {
-          "Content-type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-      const { data } = await axios.post(`http://localhost:3388/api/chat`, { userId }, config);
-      if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
-      setSelectedChat(data);
-      setLoadingChat(false);
-      onClose();
-    } catch (error) {
-      toast({
-        title: "Error fetching the chat",
-        description: error.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "top",
-      });
-    }
-  };
+  // const accessChat = async (userId) => {
+  //   try {
+  //     setLoadingChat(true);
+  //     const config = {
+  //       headers: {
+  //         "Content-type": "application/json",
+  //         Authorization: `Bearer ${user.token}`,
+  //       },
+  //     };
+  //     const { data } = await axios.post(`http://localhost:3388/api/chat`, { userId }, config);
+  //     if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
+  //     setSelectedChat(data);
+  //     setLoadingChat(false);
+  //     onClose();
+  //   } catch (error) {
+  //     toast({
+  //       title: "Error fetching the chat",
+  //       description: error.message,
+  //       status: "error",
+  //       duration: 5000,
+  //       isClosable: true,
+  //       position: "top",
+  //     });
+  //   }
+  // };
 
   return (
     <>
@@ -217,6 +207,7 @@ function SideDrawer() {
                 />
               ))
             )} */}
+           
             {search ? (
           <Stack overflowY="scroll">
             {searchResult.map((chat) => (

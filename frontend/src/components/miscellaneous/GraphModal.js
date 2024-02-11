@@ -92,7 +92,7 @@ const GraphModal = ({chatMessages}) => {
     count: messageCounts[userEmail],
   }));
   setUserMessageCountData(data);
-//   console.log("message count ",data);
+
   }, [chatMessages]);
   useEffect(() => {
     if (messageCountData.length > 0) {

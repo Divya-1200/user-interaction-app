@@ -23,12 +23,11 @@ const MyChats = ({ fetchAgain }) => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      console.log("user info ",user);
+
       const { data } = await axios.get("http://localhost:3388/api/chat", config);
       const acceptedChats = data.filter(chat => chat.users.some(user1 => user1.user._id ===  user._id && user1.status === 'accepted'));
-      const notacceptedChats = data.filter(chat => chat.users.some(user1 => user1.user._id ===  user._id && user1.status === 'pending'));
-      setNotAcceptedChats(notacceptedChats);
-      console.log("userchats ", acceptedChats);
+      const filteredData = data.filter(chat => chat.users.some(user1 => user1.user._id ===  user._id && user1.status === 'pending'));
+      setNotAcceptedChats(filteredData);
 
       setChats(acceptedChats);
     } catch (error) {
@@ -45,8 +44,6 @@ const MyChats = ({ fetchAgain }) => {
   };
 
   const handleAccept = async(chat) => {
-    console.log("chat_id",chat._id);
-    console.log("user id", user._id);
     try{
       const config = {
         headers: {
@@ -54,7 +51,7 @@ const MyChats = ({ fetchAgain }) => {
         },
       };
       const {data} = await axios.get(`http://localhost:3388/api/chat/accept/${user._id}/${chat._id}`, config);
-      console.log(data);
+ 
       toast({
           title: "Invitation Accepted",
           description: "You have been joined the group",

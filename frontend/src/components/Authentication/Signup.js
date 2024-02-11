@@ -66,7 +66,7 @@ const Signup = () => {
         isClosable: true,
         position: "top",
       });
-      // console.log("api user ",data);
+    
       localStorage.setItem("userInfo", JSON.stringify(data));
       setPicLoading(false);
       history.push("/chats");
