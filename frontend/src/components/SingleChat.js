@@ -186,7 +186,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       };
       try {
         const { data } = await axios.get(
-          `http://localhost:3388/api/tag?search=${query}`,
+          `http://localhost:3388/api/tag?search=${tagSearchKey}`,
           config
         );
         setSearchTagResult(data);

@@ -19,7 +19,7 @@ function InvitationPage(){
                             Authorization: `Bearer ${user.token}`,
                         },
                     };
-                    const {data} = await axios.get(`http://localhost:3388/api/chat/accept/${userid}/${chatid}`, config);
+                     await axios.get(`http://localhost:3388/api/chat/accept/${userid}/${chatid}`, config);
                   
                     toast({
                         title: "Invitation Accepted",

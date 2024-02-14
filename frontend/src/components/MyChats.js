@@ -50,7 +50,7 @@ const MyChats = ({ fetchAgain }) => {
             Authorization: `Bearer ${user.token}`,
         },
       };
-      const {data} = await axios.get(`http://localhost:3388/api/chat/accept/${user._id}/${chat._id}`, config);
+      await axios.get(`http://localhost:3388/api/chat/accept/${user._id}/${chat._id}`, config);
  
       toast({
           title: "Invitation Accepted",
@@ -156,7 +156,8 @@ const MyChats = ({ fetchAgain }) => {
         )}
         <div
         ></div>
-        <div></div>
+        <div 
+        mt={5}></div>
         {notacceptedChats? (
         <Stack overflowY="scroll">
          
