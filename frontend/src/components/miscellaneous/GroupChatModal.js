@@ -40,7 +40,9 @@ const GroupChatModal = ({ children }) => {
   const { user, chats, setChats } = ChatState();
 
   const handleGroup = (userToAdd) => {
-    if (selectedUsers.includes(userToAdd)) {
+    console.log("user added",userToAdd);
+    console.log("selected chats",selectedUsers);
+    if (selectedUsers.find((u) => u._id === userToAdd._id)) {
       toast({
         title: "User already added",
         status: "warning",
@@ -52,6 +54,7 @@ const GroupChatModal = ({ children }) => {
     }
 
     setSelectedUsers([...selectedUsers, userToAdd]);
+    setSearchResult([]);
   };
   const handleTags = async (tagToAdd) => {
     if(selectedTags.includes(tagToAdd)){
@@ -65,6 +68,7 @@ const GroupChatModal = ({ children }) => {
       return;
     }
     setSelectedTag([...selectedTags, tagToAdd]);
+    setSearchTagResult([]);
   };
   const handleDeleteTag = (tag) => {
     setSelectedTag(selectedTags.filter((sel) => sel._id !== tag._id));
@@ -155,6 +159,7 @@ const GroupChatModal = ({ children }) => {
         },
         config
       );
+      console.log(data);
       setChats([data, ...chats]);
       onClose();
       toast({
@@ -174,6 +179,14 @@ const GroupChatModal = ({ children }) => {
         position: "top",
       });
     }
+  };
+
+  const handleCloseModal = () => {
+    setSelectedTag([]);
+    setSelectedUsers([]); 
+    setSearchResult([]); 
+    setSearchTagResult([]); 
+    onClose(); 
   };
   /**Need to handle single tag addition */
   // const handleAddTag = async (tag) => {
@@ -211,7 +224,7 @@ const GroupChatModal = ({ children }) => {
     <>
       <span onClick={onOpen}>{children}</span>
 
-      <Modal onClose={onClose} isOpen={isOpen} isCentered>
+      <Modal onClose={handleCloseModal} isOpen={isOpen} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader

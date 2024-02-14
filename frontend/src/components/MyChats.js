@@ -156,6 +156,7 @@ const MyChats = ({ fetchAgain }) => {
         )}
         <div
         ></div>
+        <div></div>
         {notacceptedChats? (
         <Stack overflowY="scroll">
          

@@ -101,7 +101,6 @@ const GraphModal = ({chatMessages}) => {
   }, [messageCountData]);
 
 
-  
   return (
     <>
       <IconButton icon={<TimeIcon />} onClick={handleOpen} />
@@ -148,7 +147,7 @@ const GraphModal = ({chatMessages}) => {
                     <YAxis label={{ value: 'Tag count', angle: -90, position: 'insideLeft'  }} />
                     <Tooltip />
                     <Legend />
-                    <Bar isAnimationActive={false} minPointSize={15} dataKey="count" fill="#8884d8" barSize={50}/>
+                    <Bar isAnimationActive={false} minPointSize={30} dataKey="count" fill="#8884d8" barSize={50}/>
                     </BarChart>
                 </ResponsiveContainer>
                 </div>
@@ -167,7 +166,7 @@ const GraphModal = ({chatMessages}) => {
                   <XAxis
                     dataKey="user"
                     angle={0} textAnchor="middle" // Align text in the middle
-                    label={{ value: 'Users', position: 'insideBottom', dy: 10 }} // Adjust position with dy
+                    label={{ value: 'Users', position: 'insideBottom', dy: 50 }} // Adjust position with dy
                   />
                   <YAxis label={{ value: 'Total Messages sent', angle: -90, position: 'insideLeft' }} />
                   <Tooltip />
