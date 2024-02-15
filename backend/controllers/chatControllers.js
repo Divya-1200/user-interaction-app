@@ -129,7 +129,7 @@ const createGroupChat = asyncHandler(async (req, res) => {
 
     const fullGroupChat = await Chat.findOne({ _id: groupChat._id })
       .populate("users.user", "-password")
-      .populate()
+      .populate("tags","-password")
       .populate("groupAdmin", "-password");
     res.status(200).json(fullGroupChat);
   } catch (error) {
@@ -257,8 +257,8 @@ const renameGroup = asyncHandler(async (req, res) => {
     path: "users.user",
     select: "name pic email",
   })
-    .populate("groupAdmin", "-password");
-
+    .populate("groupAdmin", "-password")
+    .populate("tags","-password");
   if (!updatedChat) {
     res.status(404);
     throw new Error("Chat Not Found");
