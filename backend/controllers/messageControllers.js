@@ -117,14 +117,14 @@ const sendEmail = async ({ to, subject, body }) => {
     port: 587, 
     secure: false, 
     auth: {
-      user: 'd123j45mail@gmail.com',
-      pass: 'redgnncenmzdgqre', 
+      user: process.env.SENDER_MAIL,
+      pass: process.env.SENDER_PASSWORD, 
     },
   });
 
   // Setup email data
   const mailOptions = {
-    from: 'd123j45mail@gmail.com',
+    from: process.env.SENDER_MAIL,
     to, 
     subject, 
     text: body, 
