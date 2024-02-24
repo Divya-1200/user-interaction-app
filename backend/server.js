@@ -27,15 +27,7 @@ app.use("/api/tag", tagRoutes);
 
 const __dirname1 = path.resolve();
 
-// if (process.env.NODE_ENV === "production") {
-//   app.use(express.static(path.join(__dirname1, "/frontend/build")));
 
-//   app.get("*", (req, res) =>
-//     res.sendFile(path.resolve(__dirname1, "frontend", "build", "index.html"))
-//   );
-// } else {
-  
-// }
 app.get("/", (req, res) => {
   res.send("API is running.. successfully");
 });
@@ -45,7 +37,7 @@ app.get("/", (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = 3388;
+const PORT = process.env.PORT || 3388;
 console.log(process.env.PORT);
 const server = app.listen(
   PORT,
