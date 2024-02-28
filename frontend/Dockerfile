@@ -2,11 +2,12 @@ FROM node:14
 
 WORKDIR /app
 
-COPY package*.json ./
-
-RUN npm install --legacy-peer-deps
-
 COPY . .
+
+RUN npm config set legacy-peer-deps true
+
+RUN npm install 
+
 
 EXPOSE 3000
 
