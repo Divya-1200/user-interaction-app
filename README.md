@@ -32,7 +32,7 @@ This application facilitates group interactions and discussions among users in r
 - **Data Visualization**: Chart.js
 
 
----
+
 
 
 ## Run Locally
