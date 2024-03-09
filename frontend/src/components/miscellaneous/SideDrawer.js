@@ -31,7 +31,7 @@ import { Effect } from "react-notification-badge";
 import { getSender } from "../../config/ChatLogics";
 // import UserListItem from "../userAvatar/UserListItem";
 import { ChatState } from "../../Context/ChatProvider";
-
+API_URL=process.env.API_URL;
 function SideDrawer() {
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);

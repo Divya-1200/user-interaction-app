@@ -38,10 +38,10 @@ const GroupChatModal = ({ children }) => {
   const toast = useToast();
 
   const { user, chats, setChats } = ChatState();
-
+  API_URL=process.env.API_URL;
   const handleGroup = (userToAdd) => {
-    console.log("user added",userToAdd);
-    console.log("selected chats",selectedUsers);
+    // console.log("user added",userToAdd);
+    // console.log("selected chats",selectedUsers);
     if (selectedUsers.find((u) => u._id === userToAdd._id)) {
       toast({
         title: "User already added",
@@ -159,7 +159,7 @@ const GroupChatModal = ({ children }) => {
         },
         config
       );
-      console.log(data);
+      // console.log(data);
       setChats([data, ...chats]);
       onClose();
       toast({

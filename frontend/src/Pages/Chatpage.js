@@ -4,7 +4,7 @@ import Chatbox from "../components/Chatbox";
 import MyChats from "../components/MyChats";
 import SideDrawer from "../components/miscellaneous/SideDrawer";
 import { ChatState } from "../Context/ChatProvider";
-
+API_URL=process.env.API_URL;
 const Chatpage = () => {
   const [fetchAgain, setFetchAgain] = useState(false);
   const { user } = ChatState();

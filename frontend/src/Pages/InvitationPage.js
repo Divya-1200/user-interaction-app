@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useEffect } from "react";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
-
+API_URL=process.env.API_URL;
 function InvitationPage(){
     const history = useHistory();
     const { userid, chatid } = useParams();
