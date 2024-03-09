@@ -68,7 +68,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      const { data } = await axios.get(`http://localhost:3388/api/tag?search=${tagSearch}`, config);
+      const { data } = await axios.get(`${API_URL}/api/tag?search=${tagSearch}`, config);
       setLoading(false);
       setSearchTagResult(data);
     } catch (error) {
@@ -95,7 +95,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      const { data } = await axios.get(`http://localhost:3388/api/user?search=${search}`, config);
+      const { data } = await axios.get(`${API_URL}/api/user?search=${search}`, config);
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
@@ -122,7 +122,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
         },
       };
       const { data } = await axios.put(
-        `http://localhost:3388/api/chat/rename`,
+        `${API_URL}/api/chat/rename`,
         {
           chatId: selectedChat._id,
           chatName: groupChatName,
@@ -174,7 +174,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
         },
       };
       const { data } = await axios.put(
-        `http://localhost:3388/api/chat/tag/add`,
+        `${API_URL}/api/chat/tag/add`,
         {
           chatId: selectedChat._id,
           tag: tag,
@@ -229,7 +229,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
         },
       };
       const { data } = await axios.put(
-        `http://localhost:3388/api/chat/groupadd`,
+        `${API_URL}/api/chat/groupadd`,
         {
           chat: selectedChat,
           user: user1,
@@ -267,7 +267,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
         },
       };
       const { data } = await axios.put(
-        `http://localhost:3388/api/chat/tag/remove`,
+        `${API_URL}/api/chat/tag/remove`,
         {
           chatId: selectedChat._id,
           tagId : tag._id,
@@ -318,7 +318,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
         },
       };
       const { data } = await axios.put(
-        `http://localhost:3388/api/chat/groupremove`,
+        `${API_URL}/api/chat/groupremove`,
         {
           chatId: selectedChat._id,
           userId: user1._id,

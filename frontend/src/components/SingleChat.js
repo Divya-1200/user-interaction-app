@@ -19,8 +19,8 @@ import { ChatState } from "../Context/ChatProvider";
 import { Tooltip } from "@chakra-ui/react";
 import GraphModal from "./miscellaneous/GraphModal";
 
-
-const ENDPOINT = "http://localhost:3388";
+API_URL=process.env.API_URL;
+const ENDPOINT = process.env.API_URL;
 var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
@@ -63,7 +63,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       };
       setLoading(true);
       const { data } = await axios.get(
-        `http://localhost:3388/api/message/${selectedChat._id}`,
+        `${API_URL}/api/message/${selectedChat._id}`,
         config
       );
       setMessages(data);
@@ -96,7 +96,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         const wordsWithoutTags = wordsWithTags.map(word => word.slice(1));
         setNewMessage("");
           const { data } = await axios.post(
-            "http://localhost:3388/api/message",
+            `${API_URL}/api/message`,
             {
               content : newMessage,
               tags    : wordsWithoutTags,
@@ -186,7 +186,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       };
       try {
         const { data } = await axios.get(
-          `http://localhost:3388/api/tag?search=${tagSearchKey}`,
+          `${API_URL}/api/tag?search=${tagSearchKey}`,
           config
         );
         setSearchTagResult(data);

@@ -86,7 +86,7 @@ const GroupChatModal = ({ children }) => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      const { data } = await axios.get(`http://localhost:3388/api/tag?search=${tagSearch}`, config);
+      const { data } = await axios.get(`${API_URL}/api/tag?search=${tagSearch}`, config);
       setLoading(false);
       setSearchTagResult(data);
     } catch (error) {
@@ -112,7 +112,7 @@ const GroupChatModal = ({ children }) => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      const { data } = await axios.get(`http://localhost:3388/api/user?search=${search}`, config);
+      const { data } = await axios.get(`${API_URL}/api/user?search=${search}`, config);
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
@@ -150,7 +150,7 @@ const GroupChatModal = ({ children }) => {
         },
       };
       const { data } = await axios.post(
-        `http://localhost:3388/api/chat/group`,
+        `${API_URL}/api/chat/group`,
         {
           name: groupChatName,
           decription: groupChatDescription,

@@ -3,6 +3,10 @@ const Chat = require("../models/chatModel");
 const User = require("../models/userModel");
 const Tag  = require("../models/tagModel"); 
 const nodemailer = require('nodemailer');
+
+
+
+
 //@description     Create or fetch One to One Chat
 //@route           POST /api/chat/
 //@access          Protected
@@ -139,7 +143,7 @@ const createGroupChat = asyncHandler(async (req, res) => {
 });
 const sendInvitationEmail = async (user, groupChat, invitor) => {
 
-  const invitationLink = `http://localhost:3000/accept/${user._id}/${groupChat._id}`;
+  const invitationLink = `/accept/${user._id}/${groupChat._id}`;
   try {
     await sendEmail({
       to: user.email,
@@ -163,14 +167,14 @@ const sendEmail = async ({ to, subject, body }) => {
     port: 587, 
     secure: false, 
     auth: {
-      user: 'd123j45mail@gmail.com', 
-      pass: 'redgnncenmzdgqre',
+      user: process.env.SENDER_MAIL,
+      pass: process.env.SENDER_PASSWORD, 
     },
   });
 
   // Setup email data
   const mailOptions = {
-    from: 'd123j45mail@gmail.com', 
+    from: process.env.SENDER_MAIL,
     to, 
     subject,
     text: body, 

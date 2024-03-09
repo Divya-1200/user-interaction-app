@@ -50,7 +50,7 @@ function SideDrawer() {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const history = useHistory();
-
+  API_URL=process.env.API_URL;
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
     history.push("/");
@@ -68,7 +68,7 @@ function SideDrawer() {
             Authorization: `Bearer ${user.token}`,
           },
         };
-        const { data } = await axios.get(`http://localhost:3388/api/chat/all`, config);
+        const { data } = await axios.get(`${API_URL}/api/chat/all`, config);
         // setLoading(false);
     
         setSearchResult(data);
