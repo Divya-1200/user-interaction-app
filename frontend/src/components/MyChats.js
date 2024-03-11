@@ -9,7 +9,9 @@ import GroupChatModal from "./miscellaneous/GroupChatModal";
 import { Button } from "@chakra-ui/react";
 import { ChatState } from "../Context/ChatProvider";
 import { useHistory } from "react-router";
-API_URL=process.env.API_URL;
+
+const API_URL=process.env.REACT_APP_API_URL;
+console.log(API_URL);
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
 
@@ -26,6 +28,7 @@ const MyChats = ({ fetchAgain }) => {
       };
 
       const { data } = await axios.get(`${API_URL}/api/chat`, config);
+      console.log(API_URL);
       const acceptedChats = data.filter(chat => chat.users.some(user1 => user1.user._id ===  user._id && user1.status === 'accepted'));
       const filteredData = data.filter(chat => chat.users.some(user1 => user1.user._id ===  user._id && user1.status === 'pending'));
       setNotAcceptedChats(filteredData);

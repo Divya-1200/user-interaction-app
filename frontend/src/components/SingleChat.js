@@ -19,8 +19,8 @@ import { ChatState } from "../Context/ChatProvider";
 import { Tooltip } from "@chakra-ui/react";
 import GraphModal from "./miscellaneous/GraphModal";
 
-API_URL=process.env.API_URL;
-const ENDPOINT = process.env.API_URL;
+const API_URL=process.env.REACT_APP_API_URL;
+const ENDPOINT = process.env.REACT_APP_API_URL;
 var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {

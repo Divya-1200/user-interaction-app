@@ -38,7 +38,7 @@ const GroupChatModal = ({ children }) => {
   const toast = useToast();
 
   const { user, chats, setChats } = ChatState();
-  API_URL=process.env.API_URL;
+  const API_URL=process.env.REACT_APP_API_URL;
   const handleGroup = (userToAdd) => {
     // console.log("user added",userToAdd);
     // console.log("selected chats",selectedUsers);

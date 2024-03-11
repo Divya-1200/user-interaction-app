@@ -29,7 +29,8 @@ import { EditIcon, CheckIcon } from '@chakra-ui/icons';
 
 // import { format } from 'date-fns'; 
 // import eachDayOfInterval from 'date-fns/eachDayOfInterval';
-API_URL=process.env.API_URL;
+const API_URL=process.env.REACT_APP_API_URL;
+console.log("api url is getting printted here",API_URL);
 const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 

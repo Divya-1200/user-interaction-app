@@ -6,7 +6,7 @@ import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
 import { useState } from "react";
 import { useHistory } from "react-router";
-API_URL=process.env.API_URL;
+const API_URL=process.env.REACT_APP_API_URL;
 const Signup = () => {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);

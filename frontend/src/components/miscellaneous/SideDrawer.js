@@ -31,7 +31,7 @@ import { Effect } from "react-notification-badge";
 import { getSender } from "../../config/ChatLogics";
 // import UserListItem from "../userAvatar/UserListItem";
 import { ChatState } from "../../Context/ChatProvider";
-API_URL=process.env.API_URL;
+const API_URL=process.env.API_URL;
 function SideDrawer() {
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
@@ -50,7 +50,7 @@ function SideDrawer() {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const history = useHistory();
-  API_URL=process.env.API_URL;
+  const API_URL=process.env.API_URL;
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
     history.push("/");

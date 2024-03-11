@@ -7,7 +7,8 @@ import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
 import { ChatState } from "../../Context/ChatProvider";
-API_URL=process.env.API_URL;
+require('dotenv').config();
+const API_URL=process.env.REACT_APP_API_URL;
 const Login = () => {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);

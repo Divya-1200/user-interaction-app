@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "version": "0.1.0",
-  "proxy": "http://127.0.0.1:5000",
+  "proxy": "http://host.docker.internal:3388/",
   "private": true,
   "dependencies": {
     "@chakra-ui/icons": "^1.0.13",
@@ -13,6 +13,7 @@
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.21.1",
     "chat-app": "file:..",
+    "dotenv": "^16.4.5",
     "framer-motion": "^4",
     "react": "^17.0.2",
     "react-chips": "^0.8.0",
