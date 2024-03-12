@@ -10,6 +10,6 @@ RUN npm install -g nodemon
 
 COPY . .
 
-EXPOSE $PORT
+EXPOSE 3388
 
 CMD ["nodemon", "server.js"]
