@@ -50,7 +50,7 @@ function SideDrawer() {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const history = useHistory();
-  const API_URL=process.env.API_URL;
+  // const API_URL=process.env.API_URL;
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
     history.push("/");

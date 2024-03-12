@@ -37,8 +37,8 @@ app.get("/", (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 3388;
-console.log(process.env.PORT);
+const PORT=3388;
+
 const server = app.listen(
   PORT,
   console.log(`Server running on PORT ${PORT}...`.yellow.bold)
