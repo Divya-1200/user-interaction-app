@@ -55,6 +55,7 @@ Install dependencies
 ```bash
   cd frontend/
   npm install
+  add env file 
 ```
 
 Start the server
@@ -72,3 +73,30 @@ Start the Client
 
   
 
+## Run Docker 
+
+```bash
+cd frontend 
+```
+add env 
+  REACT_APP_API_URL=(assign the backend server url to this variable)
+
+```bash
+cd backend 
+```
+
+add env 
+
+MONGO_URI=(add gmail id)
+JWT_SECRET=secret
+SENDER_MAIL=(add gmail id)
+SENDER_PASSWORD=(add app password of your gmail account)
+API_URL=(assign the frontend server url to this variable)
+
+## Build
+
+docker-compose up --build 
+
+## Build
+
+docker-compse up
