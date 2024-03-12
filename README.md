@@ -75,17 +75,13 @@ Start the Client
 
 ## Run Docker 
 
-```bash
-cd frontend 
-```
-add env 
+
+configure .env for frontend
   REACT_APP_API_URL=(assign the backend server url to this variable)
 
-```bash
-cd backend 
-```
 
-add env 
+
+configure .env for backend 
 
 MONGO_URI=(add gmail id)
 JWT_SECRET=secret
@@ -93,10 +89,10 @@ SENDER_MAIL=(add gmail id)
 SENDER_PASSWORD=(add app password of your gmail account)
 API_URL=(assign the frontend server url to this variable)
 
-## Build
+## Build (only for first time) Run this command from root of this project
 
 docker-compose up --build 
 
-## Build
+## Run
 
 docker-compse up
